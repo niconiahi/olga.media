@@ -24,7 +24,6 @@ export default component$(() => {
   );
 });
 
-
 export const Head = component$(() => {
   const head = useDocumentHead();
   const loc = useLocation();
