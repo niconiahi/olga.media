@@ -2,14 +2,11 @@ import { component$ } from "@builder.io/qwik";
 import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
 
 const url = `https://www.youtube.com/watch?v=I4XrQIWW11Y`;
-// const url = `https://www.youtube.com/watch?v=A2HPLsdnm6s`
-// const url = `https://www.youtube.com/watch?v=30y7OQk7d-Y`
 
 function getSeconds(timestamp: string) {
   const parts = timestamp.split(":").map(Number);
 
   let seconds = 0;
-
   if (parts.length === 3) {
     seconds += parts[0] * 3600;
     seconds += parts[1] * 60;

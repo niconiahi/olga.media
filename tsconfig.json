@@ -17,10 +17,11 @@
     "outDir": "tmp",
     "noEmit": true,
     "types": ["node", "vite/client"],
+    "baseUrl": ".",
     "paths": {
       "~/*": ["./src/*"]
     }
   },
   "files": [".eslintrc.js", "postcss.config.js", "prettier.config.js", "tailwind.config.js"],
-  "include": ["src", "./*.d.ts", "./*.config.ts"]
+  "include": ["src", "db", "./*.d.ts", "./*.config.ts"]
 }
