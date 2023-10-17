@@ -82,6 +82,7 @@ export default component$(() => {
         <button type="submit">Agregar videos</button>
       </Form>
       <p>{action.value?.hola}</p>
+      <p>new</p>
       {/* {action.value ? (
         <ul>
           {action.value.map(({ title }) => (
