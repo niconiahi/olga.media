@@ -1,9 +1,9 @@
 import { component$ } from "@builder.io/qwik";
-import type { DB } from "db/types";
+// import type { DB } from "db/types";
 import { Form, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import type { D1Database } from "@cloudflare/workers-types";
-import { Kysely } from "kysely";
-import { D1Dialect } from "kysely-d1";
+// import { Kysely } from "kysely";
+// import { D1Dialect } from "kysely-d1";
 
 const videoSchema = z.array(
   z.object({
@@ -14,10 +14,10 @@ const videoSchema = z.array(
 
 export const useVideos = routeAction$(
   async ({ day, month }, { platform }) => {
-    const env = platform.env as { DB: D1Database };
-    const db = new Kysely<DB>({
-      dialect: new D1Dialect({ database: env.DB }),
-    });
+    const env = platform as unknown as { DB: D1Database };
+    // const db = new Kysely<DB>({
+    //   dialect: new D1Dialect({ database: env.DB }),
+    // });
     const res = await fetch(
       `https://www.youtube.com/@olgaenvivo_/search?query=${day}%2F${month}`,
     );
@@ -43,18 +43,21 @@ export const useVideos = routeAction$(
       throw new Error(additions.error.toString());
     }
 
-    await db
-      .insertInto("video")
-      .values(additions.data.map(({ hash, title }) => ({ title, hash })))
-      .execute();
+    // await db
+    //   .insertInto("video")
+    //   .values(additions.data.map(({ hash, title }) => ({ title, hash })))
+    //   .execute();
 
-    return db
-      .selectFrom("video")
-      .select(["title"])
-      .where((eb) =>
-        eb.or(additions.data.map(({ hash }) => eb("hash", "=", hash))),
-      )
-      .execute();
+    // return db
+    //   .selectFrom("video")
+    //   .select(["title"])
+    //   .where((eb) =>
+    //     eb.or(additions.data.map(({ hash }) => eb("hash", "=", hash))),
+    //   )
+    //   .execute();
+    return {
+      hola: typeof env.DB,
+    };
   },
   zod$({
     day: z.coerce.number(),
@@ -78,13 +81,14 @@ export default component$(() => {
         </p>
         <button type="submit">Agregar videos</button>
       </Form>
-      {action.value ? (
+      <p>{action.value?.hola}</p>
+      {/* {action.value ? (
         <ul>
           {action.value.map(({ title }) => (
             <li key={`video_${title}`}>{title}</li>
           ))}
         </ul>
-      ) : null}
+      ) : null} */}
     </main>
   );
 });
