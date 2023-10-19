@@ -9,6 +9,13 @@ export interface _CfKV {
   value: Buffer | null;
 }
 
+export interface Cut {
+  id: Generated<number>;
+  label: string;
+  start: number;
+  video_id: number;
+}
+
 export interface D1Migrations {
   applied_at: Generated<string>;
   id: Generated<number | null>;
@@ -17,14 +24,17 @@ export interface D1Migrations {
 
 export interface Video {
   createdAt: Generated<string | null>;
+  day: number;
   hash: string;
   id: Generated<number>;
+  month: number;
   title: string;
   updatedAt: string | null;
 }
 
 export interface DB {
   _cf_KV: _CfKV;
+  cut: Cut;
   d1_migrations: D1Migrations;
   video: Video;
 }

@@ -1,45 +1,21 @@
 import { component$ } from "@builder.io/qwik";
 import { routeLoader$, type DocumentHead } from "@builder.io/qwik-city";
+import type { D1Database } from "@cloudflare/workers-types";
+import type { DB } from "db/types";
+import { Kysely } from "kysely";
+import { D1Dialect } from "kysely-d1";
 
-const url = `https://www.youtube.com/watch?v=I4XrQIWW11Y`;
+export const useList = routeLoader$(async ({ platform }) => {
+  const env = platform.env as { DB: D1Database };
+  const db = new Kysely<DB>({
+    dialect: new D1Dialect({ database: env.DB }),
+  });
 
-function getSeconds(timestamp: string) {
-  const parts = timestamp.split(":").map(Number);
-
-  let seconds = 0;
-  if (parts.length === 3) {
-    seconds += parts[0] * 3600;
-    seconds += parts[1] * 60;
-    seconds += parts[2];
-  } else if (parts.length === 2) {
-    seconds += parts[0] * 60;
-    seconds += parts[1];
-  } else if (parts.length === 1) {
-    seconds = parts[0];
-  }
-
-  return seconds;
-}
-
-export const useList = routeLoader$(async () => {
-  const res = await fetch(url);
-  const html = await res.text();
-  const regex = /(\d+:\d{2}(?::\d{2})?) (.*?)(?=\\n|$)/g;
-  const list = [];
-
-  let match;
-  while ((match = regex.exec(html)) !== null) {
-    list.push({
-      time: match[1],
-      label: match[2],
-    });
-  }
-
-  const index = list
-    .slice(1, list.length)
-    .findIndex((element) => element.time === "0:00");
-
-  return list.slice(0, index + 1);
+  return await db
+    .selectFrom("cut")
+    .innerJoin("video", "video.id", "cut.video_id")
+    .select(["video.hash", "cut.label", "cut.start"])
+    .execute();
 });
 
 export default component$(() => {
@@ -47,15 +23,15 @@ export default component$(() => {
 
   return (
     <main>
-      <h1 class="text-6xl text-brand-blue">Momentos</h1>
+      <h1 class="text-6xl text-brand-blue">Cortes</h1>
       <ul>
-        {Array.from(list.value).map((li) => (
-          <li key={`youtube_link_${li.time}`}>
+        {Array.from(list.value).map(({ label, start, hash }) => (
+          <li key={`youtube_link_${label}`}>
             <a
               class="text-brand-red hover:cursor-pointer hover:underline"
-              href={url + "&t=" + getSeconds(li.time)}
+              href={`https://www.youtube.com/watch?v=${hash}` + "&t=" + start}
             >
-              {li.label}
+              {label}
             </a>
           </li>
         ))}
