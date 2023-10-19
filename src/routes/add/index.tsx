@@ -5,15 +5,15 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { Kysely } from "kysely";
 import { D1Dialect } from "kysely-d1";
 
-const videoSchema = z.array(
+const videosSchema = z.array(
   z.object({
     title: z.string(),
     hash: z.string(),
   }),
 );
 
-export const useVideos = routeAction$(
-  async ({ day, month }, { platform }) => {
+export const useAddDay = routeAction$(
+  async ({ day, month }, { platform, fail, status }) => {
     const env = platform.env as { DB: D1Database };
     const db = new Kysely<DB>({
       dialect: new D1Dialect({ database: env.DB }),
@@ -23,45 +23,49 @@ export const useVideos = routeAction$(
     );
     const html = await res.text();
     const regex = /"videoId":"([^"]*?)".*?"text":"((?:[^"\\]|\\.)*)"/g;
-    const videos = [] as unknown[];
+    const raws = [] as unknown[];
 
     let match;
     while ((match = regex.exec(html)) !== null) {
       const [, hash, title] = match;
-      console.log("hash:", hash);
-      console.log("title:", title);
-      const id = `${day}/${month}`;
 
-      console.log("id:", id);
-      if (title.includes(id)) {
-        videos.push({
+      if (title.includes(`${day}/${month}`)) {
+        raws.push({
           hash,
           title,
         });
       }
     }
 
-    const additions = videoSchema.safeParse(videos);
-
-    if (!additions.success) {
-      throw new Error(additions.error.toString());
+    const result = videosSchema.safeParse(raws);
+    if (!result.success) {
+      throw new Error(result.error.toString());
     }
 
-    if (additions.data.length === 0) {
-      return [];
+    const videos = result.data;
+    const prevVideos = await db
+      .selectFrom("video")
+      .select(["hash"])
+      .where((eb) => eb.or(videos.map(({ hash }) => eb("hash", "=", hash))))
+      .execute();
+
+    const insertions = result.data.filter(
+      ({ hash }) => !prevVideos.some((prevVideo) => prevVideo.hash === hash),
+    );
+    if (insertions.length === 0) {
+      return fail(409, []);
     }
 
     await db
       .insertInto("video")
-      .values(additions.data.map(({ hash, title }) => ({ title, hash })))
+      .values(insertions.map(({ hash, title }) => ({ title, hash })))
       .execute();
 
+    status(201);
     return db
       .selectFrom("video")
       .select(["title"])
-      .where((eb) =>
-        eb.or(additions.data.map(({ hash }) => eb("hash", "=", hash))),
-      )
+      .where((eb) => eb.or(insertions.map(({ hash }) => eb("hash", "=", hash))))
       .execute();
   },
   zod$({
@@ -71,7 +75,7 @@ export const useVideos = routeAction$(
 );
 
 export default component$(() => {
-  const action = useVideos();
+  const action = useAddDay();
 
   return (
     <main>
@@ -86,13 +90,15 @@ export default component$(() => {
         </p>
         <button type="submit">Agregar videos</button>
       </Form>
-      <p>new</p>
-      {action.value ? (
+      {action.value && action.value.length > 0 ? (
         <ul>
           {action.value.map(({ title }) => (
             <li key={`video_${title}`}>{title}</li>
           ))}
         </ul>
+      ) : null}
+      {action.status && action.status === 409 ? (
+        <h1>Todos los videos de este dia fueron agregados</h1>
       ) : null}
     </main>
   );
