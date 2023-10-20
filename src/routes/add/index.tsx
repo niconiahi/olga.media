@@ -8,35 +8,28 @@ import { D1Dialect } from "kysely-d1";
 const videosSchema = z.array(
   z.object({
     hash: z.string(),
+    show: z.string(),
     title: z.string(),
   }),
 );
 
 const cutsSchema = z.array(
   z.object({
-    time: z.string(),
+    start: z.string(),
     label: z.string(),
     videoId: z.number(),
   }),
 );
 
-// the "time" comes in the form of "dd:dd:dd"
-function getSeconds(time: string) {
-  const parts = time.split(":").map(Number);
+function getShow(title: string): string {
+  const regex = /(Ser[ií]a\sIncre[ií]ble|So[ñn]é?\sQue\sVolaba)/g;
+  const matches = title.match(regex);
 
-  let seconds = 0;
-  if (parts.length === 3) {
-    seconds += parts[0] * 3600;
-    seconds += parts[1] * 60;
-    seconds += parts[2];
-  } else if (parts.length === 2) {
-    seconds += parts[0] * 60;
-    seconds += parts[1];
-  } else if (parts.length === 1) {
-    seconds = parts[0];
+  if (!matches) {
+    throw new Error('the "title" should contain the "show" name');
   }
 
-  return seconds;
+  return matches[0];
 }
 
 export async function getCuts(hash: string, videoId: number) {
@@ -48,9 +41,9 @@ export async function getCuts(hash: string, videoId: number) {
 
   let match;
   while ((match = regex.exec(html)) !== null) {
-    const [, time, label] = match;
+    const [, start, label] = match;
     raws.push({
-      time,
+      start,
       label,
       videoId,
     });
@@ -66,7 +59,7 @@ export async function getCuts(hash: string, videoId: number) {
   const index = cuts
     .slice(1, cuts.length)
     .findIndex(
-      (element) => element.time === "0:00" || element.time === "00:00",
+      (element) => element.start === "0:00" || element.start === "00:00",
     );
 
   // and we cut it there
@@ -94,6 +87,7 @@ export const useAddCutsy = routeAction$(
         raws.push({
           hash,
           title,
+          show: getShow(title),
         });
       }
     }
@@ -119,7 +113,15 @@ export const useAddCutsy = routeAction$(
 
     await db
       .insertInto("video")
-      .values(videos.map(({ hash, title }) => ({ title, hash, day, month })))
+      .values(
+        videos.map(({ hash, title, show }) => ({
+          title,
+          hash,
+          day,
+          month,
+          show,
+        })),
+      )
       .execute();
 
     const addedVideos = await db
@@ -135,9 +137,9 @@ export const useAddCutsy = routeAction$(
     await db
       .insertInto("cut")
       .values(
-        cuts.map(({ label, time, videoId }) => ({
+        cuts.map(({ label, start, videoId }) => ({
           label,
-          start: getSeconds(time),
+          start,
           video_id: videoId,
         })),
       )

@@ -12,7 +12,7 @@ export interface _CfKV {
 export interface Cut {
   id: Generated<number>;
   label: string;
-  start: number;
+  start: string;
   video_id: number;
 }
 
@@ -28,6 +28,7 @@ export interface Video {
   hash: string;
   id: Generated<number>;
   month: number;
+  show: string;
   title: string;
   updatedAt: string | null;
 }
