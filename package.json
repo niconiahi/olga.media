@@ -54,6 +54,7 @@
     "wrangler": "^3.13.1"
   },
   "dependencies": {
+    "clsx": "^2.0.0",
     "kysely": "^0.26.3",
     "kysely-d1": "^0.3.0"
   }
