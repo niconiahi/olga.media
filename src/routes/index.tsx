@@ -81,7 +81,7 @@ export default component$(() => {
   const list = useList();
 
   return (
-    <main class="mx-auto my-8 max-w-max space-y-2">
+    <main class="mx-auto my-8 max-w-max space-y-2 px-2 md:my-2">
       <ul class="space-y-2">
         {list.value
           .slice()
