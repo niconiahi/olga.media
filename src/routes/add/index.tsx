@@ -66,7 +66,7 @@ export async function getCuts(hash: string, videoId: number) {
   return cuts.slice(0, index + 1);
 }
 
-export const useAddCutsy = routeAction$(
+export const useAddCuts = routeAction$(
   async ({ day, month }, { platform, fail, status }) => {
     const env = platform.env as { DB: D1Database };
     const db = new Kysely<DB>({
@@ -155,7 +155,7 @@ export const useAddCutsy = routeAction$(
 );
 
 export default component$(() => {
-  const action = useAddCutsy();
+  const action = useAddCuts();
 
   return (
     <main>
