@@ -4,6 +4,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Bebas Kai";
+  src: url("/fonts/BebasKai.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Public Sans";
+  src: url("/fonts/PublicSans-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -13,4 +29,12 @@
   overflow: hidden;
   clip: rect(0,0,0,0);
   border: 0;
+}
+
+body {
+  font-family: "Public Sans";
+} 
+
+h4 {
+  font-family: "Bebas Kai";
 }

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { component$ } from "@builder.io/qwik";
 import {
   routeLoader$,
@@ -121,10 +122,10 @@ export default component$(() => {
           .reverse()
           .map(([day, cut]) => (
             <li key={`day-${day}`} class="space-y-2">
-              <h4 class="border-b-2 border-b-brand-red font-bold uppercase text-brand-red">
+              <h4 class="uppercase text-brand-red text-3xl leading-none mt-3">
                 {day}
               </h4>
-              <ul class="space-y-2">
+              <ul class="space-y-3">
                 {Object.entries(cut).map(([_show, cuts]) => {
                   const show = _show.toLocaleLowerCase().includes("volaba")
                     ? "sone-que-volaba"
@@ -133,11 +134,11 @@ export default component$(() => {
                   return (
                     <li
                       key={`show-${day}-${show}`}
-                      // eslint-disable-next-line prettier/prettier
-                    class={clsx(['rounded-md border-2 p-2 space-y-2',
+                      class={clsx([
+                        "space-y-2 rounded-md border-2 p-2 mr-0.5",
                         show === "sone-que-volaba"
-                          ? "border-show-soneQueVolaba-blue"
-                          : "border-show-seriaIncreible-purple",
+                          ? "border-show-soneQueVolaba-blue shadow-soneQueVolaba"
+                          : "border-show-seriaIncreible-purple shadow-seriaIncreible",
                       ])}
                     >
                       {show === "seria-increible" ? (
@@ -148,7 +149,7 @@ export default component$(() => {
                       ) : null}
                       <ul>
                         {cuts.map(({ label, start, hash }) => (
-                          <li key={`cut-${day}-${show}-${hash}`}>
+                          <li key={`cut-${day}-${show}-${hash}`} class="b">
                             <a
                               class={clsx([
                                 "flex w-full justify-between space-x-2 rounded-sm p-0.5 hover:cursor-pointer",

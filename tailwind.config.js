@@ -3,6 +3,10 @@ module.exports = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      boxShadow: {
+        seriaIncreible: "#6f49a0 2px 4px 0px 0px",
+        soneQueVolaba: "#006ba6 2px 4px 0px 0px",
+      },
       colors: {
         brand: {
           blue: "#015fa0",
