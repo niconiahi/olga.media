@@ -107,8 +107,8 @@ export default component$(() => {
   const search = useSearch();
 
   return (
-    <main class="mx-auto my-2 space-y-2 px-2 md:my-8 md:max-w-max">
-      <Form reloadDocument class="flex items-center justify-between w-full border-2 border-brand-red rounded-md" action={search}>
+    <main class="mx-auto mt-2 mb-3 space-y-2 px-2 md:my-8 md:max-w-max">
+      <Form reloadDocument class="flex items-center justify-between w-full border-2 border-brand-red" action={search}>
         <p class='w-full px-2'>
           <label for="query" class="sr-only">
             Buscar por titulo
@@ -121,9 +121,9 @@ export default component$(() => {
         {list.value
           .slice()
           .reverse()
-          .map(([day, cut]) => (
+          .map(([day, cut], index) => (
             <li key={`day-${day}`} class="space-y-2">
-              <h4 class="uppercase text-brand-red text-3xl leading-none mt-3 bebas">
+              <h4 class={clsx(["uppercase text-brand-red text-3xl leading-none bebas", index > 0 && 'mt-3'])}>
                 {day}
               </h4>
               <ul class="space-y-3">
@@ -136,7 +136,7 @@ export default component$(() => {
                     <li
                       key={`show-${day}-${show}`}
                       class={clsx([
-                        "space-y-2 rounded-md border-2 p-2 mr-0.5",
+                        "space-y-2 border-2 p-2 mr-0.5",
                         show === "sone-que-volaba"
                           ? "border-show-soneQueVolaba-blue shadow-soneQueVolaba"
                           : "border-show-seriaIncreible-purple shadow-seriaIncreible",
@@ -153,7 +153,7 @@ export default component$(() => {
                           <li key={`cut-${day}-${show}-${hash}`} class="b">
                             <a
                               class={clsx([
-                                "flex w-full justify-between space-x-2 rounded-sm p-0.5 hover:cursor-pointer font-medium ",
+                                "flex w-full justify-between space-x-2 p-0.5 hover:cursor-pointer font-medium",
                                 show === "sone-que-volaba"
                                   ? "hover:bg-show-soneQueVolaba-blueHover focus-visible:outline-show-soneQueVolaba-blue"
                                   : "hover:bg-show-seriaIncreible-purpleHover focus-visible:outline-show-seriaIncreible-purple",
