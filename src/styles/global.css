@@ -14,9 +14,17 @@
 
 @font-face {
   font-family: "Public Sans";
-  src: url("/fonts/PublicSans-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
+  src: url("/fonts/PublicSans-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: bold;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Mabry Pro";
+  src: url("/fonts/MabryPro-Medium.ttf") format("truetype");
+  font-weight: medium;
+  font-style: medium;
   font-display: block;
 }
 
@@ -31,10 +39,11 @@
   border: 0;
 }
 
-body {
-  font-family: "Public Sans";
+.mabry {
+  font-family: "Mabry Pro";
 } 
 
-h4 {
+.bebas {
   font-family: "Bebas Kai";
 }
+

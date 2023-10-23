@@ -94,7 +94,8 @@ export const useList = routeLoader$(async ({ platform, request }) => {
 
 export const useSearch = routeAction$(
   async ({ query }, { redirect }) => {
-    throw redirect(302, `/?query=${query}`);
+
+    throw redirect(302, query === '' ? '/' : `/?query=${query}`);
   },
   zod$({
     query: z.string(),
@@ -107,14 +108,14 @@ export default component$(() => {
 
   return (
     <main class="mx-auto my-2 space-y-2 px-2 md:my-8 md:max-w-max">
-      <Form reloadDocument class="flex items-center" action={search}>
-        <p>
+      <Form reloadDocument class="flex items-center justify-between w-full border-2 border-brand-red rounded-md" action={search}>
+        <p class='w-full px-2'>
           <label for="query" class="sr-only">
             Buscar por titulo
           </label>
-          <input type="text" id="query" name="query" />
+          <input class="mabry w-full text-brand-blue focus-visible:outline-brand-blue px-1" type="text" id="query" name="query" />
         </p>
-        <button type="submit">Buscar</button>
+        <button class='bg-brand-red py-2 px-4 text-white text-2xl mabry focus-visible:outline-brand-blue outline-offset-1' type="submit">Buscar</button>
       </Form>
       <ul class="space-y-2">
         {list.value
@@ -122,7 +123,7 @@ export default component$(() => {
           .reverse()
           .map(([day, cut]) => (
             <li key={`day-${day}`} class="space-y-2">
-              <h4 class="uppercase text-brand-red text-3xl leading-none mt-3">
+              <h4 class="uppercase text-brand-red text-3xl leading-none mt-3 bebas">
                 {day}
               </h4>
               <ul class="space-y-3">
@@ -152,10 +153,10 @@ export default component$(() => {
                           <li key={`cut-${day}-${show}-${hash}`} class="b">
                             <a
                               class={clsx([
-                                "flex w-full justify-between space-x-2 rounded-sm p-0.5 hover:cursor-pointer",
+                                "flex w-full justify-between space-x-2 rounded-sm p-0.5 hover:cursor-pointer font-medium ",
                                 show === "sone-que-volaba"
-                                  ? "hover:bg-show-soneQueVolaba-blueHover"
-                                  : "hover:bg-show-seriaIncreible-purpleHover",
+                                  ? "hover:bg-show-soneQueVolaba-blueHover focus-visible:outline-show-soneQueVolaba-blue"
+                                  : "hover:bg-show-seriaIncreible-purpleHover focus-visible:outline-show-seriaIncreible-purple",
                               ])}
                               href={
                                 `https://www.youtube.com/watch?v=${hash}` +
@@ -165,6 +166,7 @@ export default component$(() => {
                             >
                               <span
                                 class={clsx([
+                                  'mabry',
                                   show === "sone-que-volaba"
                                     ? "text-show-soneQueVolaba-blue"
                                     : "text-show-seriaIncreible-purple",
@@ -172,7 +174,7 @@ export default component$(() => {
                               >
                                 {label}
                               </span>
-                              <span class="text-brand-red">{start}</span>
+                              <span class="text-brand-red mabry">{start}</span>
                             </a>
                           </li>
                         ))}
