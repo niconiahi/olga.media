@@ -55,7 +55,7 @@ export default component$(() => {
   const loginUser = useLoginUser();
 
   return (
-    <main class="mx-auto grid h-full place-items-center space-y-2 px-2 pb-3 pt-2 md:max-w-max md:py-8">
+    <main class="mx-auto grid h-full place-items-center px-2 pb-3 pt-2 md:max-w-max md:py-8">
       <Form action={loginUser} class="w-80 space-y-2">
         <p class="flex flex-col">
           <label class="mabry leading-none text-brand-blue" for="username">
