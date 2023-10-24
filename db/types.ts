@@ -22,6 +22,24 @@ export interface D1Migrations {
   name: string | null;
 }
 
+export interface User {
+  id: string;
+  username: string;
+}
+
+export interface UserKey {
+  hashed_password: string | null;
+  id: string;
+  user_id: string;
+}
+
+export interface UserSession {
+  active_expires: string;
+  id: string;
+  idle_expires: string;
+  user_id: string;
+}
+
 export interface Video {
   createdAt: Generated<string | null>;
   day: number;
@@ -37,5 +55,8 @@ export interface DB {
   _cf_KV: _CfKV;
   cut: Cut;
   d1_migrations: D1Migrations;
+  user: User;
+  user_key: UserKey;
+  user_session: UserSession;
   video: Video;
 }

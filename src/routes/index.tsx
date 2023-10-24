@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { component$ } from "@builder.io/qwik";
 import {
   routeLoader$,
@@ -33,7 +32,7 @@ function getSeconds(start: string) {
   return seconds;
 }
 
-export const useList = routeLoader$(async ({ platform, request }) => {
+export const useCuts = routeLoader$(async ({ platform, request }) => {
   const env = platform.env as { DB: D1Database };
   const db = new Kysely<DB>({
     dialect: new D1Dialect({ database: env.DB }),
@@ -57,7 +56,22 @@ export const useList = routeLoader$(async ({ platform, request }) => {
     cuts
       .filter((cut) => {
         return query
-          ? cut.label.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+          ? cut.label
+              .toLocaleLowerCase()
+              .replaceAll("á", "a")
+              .replaceAll("é", "e")
+              .replaceAll("í", "i")
+              .replaceAll("ó", "o")
+              .replaceAll("ú", "u")
+              .includes(
+                query
+                  .toLocaleLowerCase()
+                  .replaceAll("á", "a")
+                  .replaceAll("é", "e")
+                  .replaceAll("í", "i")
+                  .replaceAll("ó", "o")
+                  .replaceAll("ú", "u"),
+              )
           : true;
       })
       .reduce<{
@@ -94,8 +108,7 @@ export const useList = routeLoader$(async ({ platform, request }) => {
 
 export const useSearch = routeAction$(
   async ({ query }, { redirect }) => {
-
-    throw redirect(302, query === '' ? '/' : `/?query=${query}`);
+    throw redirect(302, query === "" ? "/" : `/?query=${query}`);
   },
   zod$({
     query: z.string(),
@@ -103,27 +116,46 @@ export const useSearch = routeAction$(
 );
 
 export default component$(() => {
-  const list = useList();
+  const cuts = useCuts();
   const search = useSearch();
 
   return (
-    <main class="mx-auto mt-2 mb-3 space-y-2 px-2 md:my-8 md:max-w-max">
-      <Form reloadDocument class="flex items-center justify-between w-full border-2 border-brand-red" action={search}>
-        <p class='w-full px-2'>
+    <main class="mx-auto space-y-2 px-2 pb-3 pt-2 md:my-8 md:max-w-max">
+      <Form
+        reloadDocument
+        class="flex w-full items-center justify-between border-2 border-brand-red"
+        action={search}
+      >
+        <p class="w-full px-2">
           <label for="query" class="sr-only">
             Buscar por titulo
           </label>
-          <input class="mabry w-full text-brand-blue focus-visible:outline-brand-blue px-1" type="text" id="query" name="query" />
+          <input
+            class="mabry w-full px-1 text-brand-blue outline-2 focus-visible:outline focus-visible:outline-brand-blue"
+            type="text"
+            id="query"
+            name="query"
+          />
         </p>
-        <button class='bg-brand-red py-2 px-4 text-white text-2xl mabry focus-visible:outline-brand-blue outline-offset-1' type="submit">Buscar</button>
+        <button
+          class="mabry bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-2 focus-visible:outline focus-visible:outline-brand-blue"
+          type="submit"
+        >
+          Buscar
+        </button>
       </Form>
       <ul class="space-y-2">
-        {list.value
+        {cuts.value
           .slice()
           .reverse()
           .map(([day, cut], index) => (
             <li key={`day-${day}`} class="space-y-2">
-              <h4 class={clsx(["uppercase text-brand-red text-3xl leading-none bebas", index > 0 && 'mt-3'])}>
+              <h4
+                class={clsx([
+                  "bebas text-3xl uppercase leading-none text-brand-red",
+                  index > 0 && "mt-3",
+                ])}
+              >
                 {day}
               </h4>
               <ul class="space-y-3">
@@ -136,7 +168,7 @@ export default component$(() => {
                     <li
                       key={`show-${day}-${show}`}
                       class={clsx([
-                        "space-y-2 border-2 p-2 mr-0.5",
+                        "mr-0.5 space-y-2 border-2 p-2",
                         show === "sone-que-volaba"
                           ? "border-show-soneQueVolaba-blue shadow-soneQueVolaba"
                           : "border-show-seriaIncreible-purple shadow-seriaIncreible",
@@ -153,11 +185,12 @@ export default component$(() => {
                           <li key={`cut-${day}-${show}-${hash}`} class="b">
                             <a
                               class={clsx([
-                                "flex w-full justify-between space-x-2 p-0.5 hover:cursor-pointer font-medium",
+                                "flex w-full justify-between space-x-2 p-0.5 font-medium hover:cursor-pointer",
                                 show === "sone-que-volaba"
-                                  ? "hover:bg-show-soneQueVolaba-blueHover focus-visible:outline-show-soneQueVolaba-blue"
-                                  : "hover:bg-show-seriaIncreible-purpleHover focus-visible:outline-show-seriaIncreible-purple",
+                                  ? "outline-2 hover:bg-show-soneQueVolaba-blueHover focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue"
+                                  : "outline-2 hover:bg-show-seriaIncreible-purpleHover focus-visible:outline focus-visible:outline-show-seriaIncreible-purple",
                               ])}
+                              target="_blank"
                               href={
                                 `https://www.youtube.com/watch?v=${hash}` +
                                 "&t=" +
@@ -166,7 +199,7 @@ export default component$(() => {
                             >
                               <span
                                 class={clsx([
-                                  'mabry',
+                                  "mabry",
                                   show === "sone-que-volaba"
                                     ? "text-show-soneQueVolaba-blue"
                                     : "text-show-seriaIncreible-purple",
@@ -174,7 +207,7 @@ export default component$(() => {
                               >
                                 {label}
                               </span>
-                              <span class="text-brand-red mabry">{start}</span>
+                              <span class="mabry text-brand-red">{start}</span>
                             </a>
                           </li>
                         ))}

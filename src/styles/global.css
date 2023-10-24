@@ -47,3 +47,6 @@
   font-family: "Bebas Kai";
 }
 
+body, input {
+  background-color: theme(colors.brand.stone);
+}

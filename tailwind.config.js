@@ -11,6 +11,7 @@ module.exports = {
         brand: {
           blue: "#015fa0",
           red: "#ff0044",
+          stone: "#f2f2f2",
         },
         show: {
           seriaIncreible: {
