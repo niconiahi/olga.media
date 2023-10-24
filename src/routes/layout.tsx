@@ -7,16 +7,16 @@ export default component$(() => {
       <header class="flex w-full items-center justify-between border-b-2 border-b-brand-red p-2">
         <Link
           href="/"
-          class="outline-3 w-max rounded-full outline-offset-2 focus-visible:outline focus-visible:outline-brand-red"
+          class="w-max rounded-full outline-2 outline-offset-2 focus-visible:outline focus-visible:outline-brand-red"
         >
           <OlgaIcon />
         </Link>
         <button
           aria-label="Open menu "
-          class="w-16 p-2 outline-2 focus-visible:outline focus-visible:outline-brand-blue"
+          class="h-16 w-16 border-2 border-brand-blue p-2 outline-2 outline-offset-1 focus-visible:outline focus-visible:outline-brand-red"
         >
           <svg
-            class="text-brand-red"
+            class="text-brand-blue"
             viewBox="0 0 20 14"
             xmlns="http://www.w3.org/2000/svg"
           >
