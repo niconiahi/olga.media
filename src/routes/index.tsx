@@ -120,7 +120,7 @@ export default component$(() => {
   const search = useSearch();
 
   return (
-    <main class="mx-auto space-y-2 px-2 pb-3 pt-2 md:my-8 md:max-w-max">
+    <main class="mx-auto space-y-2 px-2 pb-3 pt-2 md:max-w-max md:py-8">
       <Form
         reloadDocument
         class="flex w-full items-center justify-between border-2 border-brand-red"
