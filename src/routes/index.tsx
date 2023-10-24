@@ -138,7 +138,7 @@ export default component$(() => {
           />
         </p>
         <button
-          class="mabry bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-2 focus-visible:outline focus-visible:outline-brand-blue"
+          class="mabry outline-3 bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-offset-2 focus-visible:outline focus-visible:outline-brand-blue"
           type="submit"
         >
           Buscar

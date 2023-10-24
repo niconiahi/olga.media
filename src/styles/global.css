@@ -50,3 +50,7 @@
 body, input {
   background-color: theme(colors.brand.stone);
 }
+
+.outline-3 {
+  outline-width: 3px;
+}
