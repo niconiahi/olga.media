@@ -120,7 +120,7 @@ export default component$(() => {
   const search = useSearch();
 
   return (
-    <main class="mx-auto space-y-2 px-2 pb-3 pt-2 md:max-w-max md:py-8">
+    <>
       <Form
         reloadDocument
         class="flex w-full items-center justify-between border-2 border-brand-red"
@@ -131,14 +131,14 @@ export default component$(() => {
             Buscar por titulo
           </label>
           <input
-            class="mabry w-full px-1 text-brand-blue outline-2 focus-visible:outline focus-visible:outline-brand-blue"
+            class="mabry w-full px-1 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-blue"
             type="text"
             id="query"
             name="query"
           />
         </p>
         <button
-          class="mabry bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-2 outline-offset-2 focus-visible:outline focus-visible:outline-brand-blue"
+          class="mabry bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-blue"
           type="submit"
         >
           Buscar
@@ -153,7 +153,7 @@ export default component$(() => {
               <h4
                 class={clsx([
                   "bebas text-3xl uppercase leading-none text-brand-red",
-                  index > 0 && "mt-3",
+                  index > 0 ? "mt-3" : "mt-2",
                 ])}
               >
                 {day}
@@ -187,8 +187,8 @@ export default component$(() => {
                               class={clsx([
                                 "flex w-full justify-between space-x-2 p-0.5 font-medium hover:cursor-pointer",
                                 show === "sone-que-volaba"
-                                  ? "outline-2 hover:bg-show-soneQueVolaba-blueHover focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue"
-                                  : "outline-2 hover:bg-show-seriaIncreible-purpleHover focus-visible:outline focus-visible:outline-show-seriaIncreible-purple",
+                                  ? "outline-4 hover:bg-show-soneQueVolaba-blueHover focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue"
+                                  : "outline-4 hover:bg-show-seriaIncreible-purpleHover focus-visible:outline focus-visible:outline-show-seriaIncreible-purple",
                               ])}
                               target="_blank"
                               href={
@@ -219,7 +219,7 @@ export default component$(() => {
             </li>
           ))}
       </ul>
-    </main>
+    </>
   );
 });
 
@@ -233,7 +233,7 @@ export const head: DocumentHead = {
   ],
 };
 
-function SoneQueVolabaIcon() {
+export const SoneQueVolabaIcon = component$(() => {
   return (
     <svg viewBox="0 0 349 118" class="w-32" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -314,9 +314,9 @@ function SoneQueVolabaIcon() {
       />
     </svg>
   );
-}
+});
 
-function SeriaIncreibleIcon() {
+export const SeriaIncreibleIcon = component$(() => {
   return (
     <svg viewBox="0 0 181 119" class="w-28" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -329,4 +329,4 @@ function SeriaIncreibleIcon() {
       />
     </svg>
   );
-}
+});

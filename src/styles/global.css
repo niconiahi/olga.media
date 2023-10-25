@@ -51,6 +51,11 @@ body, input {
   background-color: theme(colors.brand.stone);
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+}
+
 .outline-3 {
   outline-width: 3px;
 }

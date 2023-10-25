@@ -58,42 +58,40 @@ export default component$(() => {
   const createUser = useCreateUser();
 
   return (
-    <main class="mx-auto grid h-full place-items-center px-2 pb-3 pt-2 md:max-w-max md:py-8">
-      <Form action={createUser} class="w-80 space-y-2">
-        <p class="flex w-full flex-col">
-          <label class="mabry leading-none text-brand-blue" for="username">
-            Usuario
-          </label>
-          <input
-            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-2 focus-visible:outline focus-visible:outline-brand-red"
-            type="text"
-            id="username"
-            name="username"
-          />
+    <Form action={createUser} class="w-80 space-y-2">
+      <p class="flex flex-col space-y-1">
+        <label class="mabry leading-none text-brand-blue" for="username">
+          Usuario
+        </label>
+        <input
+          class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red"
+          type="text"
+          id="username"
+          name="username"
+        />
+      </p>
+      <p class="flex flex-col space-y-1">
+        <label class="mabry leading-none text-brand-blue" for="password">
+          Contraseña
+        </label>
+        <input
+          class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red"
+          type="password"
+          id="password"
+          name="password"
+        />
+      </p>
+      {createUser.value?.failed && createUser.value.message ? (
+        <p class="mabry text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1">
+          {createUser.value.message}
         </p>
-        <p class="flex w-full flex-col">
-          <label class="mabry leading-none text-brand-blue" for="password">
-            Contraseña
-          </label>
-          <input
-            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-2 focus-visible:outline focus-visible:outline-brand-red"
-            type="password"
-            id="password"
-            name="password"
-          />
-        </p>
-        {createUser.value?.failed && createUser.value.message ? (
-          <p class="mabry text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1">
-            {createUser.value.message}
-          </p>
-        ) : null}
-        <button
-          type="submit"
-          class="mabry w-full bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-2 focus-visible:outline focus-visible:outline-brand-blue"
-        >
-          Crear
-        </button>
-      </Form>
-    </main>
+      ) : null}
+      <button
+        type="submit"
+        class="mabry w-full bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 focus-visible:outline focus-visible:outline-brand-blue"
+      >
+        Crear
+      </button>
+    </Form>
   );
 });
