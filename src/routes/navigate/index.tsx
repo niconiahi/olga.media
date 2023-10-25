@@ -3,7 +3,7 @@ import { Link } from "@builder.io/qwik-city";
 
 export default component$(() => {
   return (
-    <nav>
+    <nav class="flex h-full flex-col items-end justify-center space-y-2">
       <ul class="space-y-3">
         <li>
           <Link

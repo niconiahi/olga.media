@@ -65,7 +65,7 @@ export default component$(() => {
   });
 
   return (
-    <section class="flex h-full flex-col items-center justify-end space-y-2">
+    <section class="flex h-full flex-col items-end justify-center space-y-2">
       <Form action={createUser} class="w-80 space-y-2">
         <p class="flex flex-col space-y-1">
           <label class="mabry leading-none text-brand-blue" for="username">
