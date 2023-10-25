@@ -2,7 +2,7 @@ import { Form, Link, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import { LuciaError, lucia } from "lucia";
 import { d1 } from "@lucia-auth/adapter-sqlite";
 import type { D1Database } from "@cloudflare/workers-types";
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 
 export const initializeLucia = (db: D1Database) => {
   const auth = lucia({
@@ -55,18 +55,27 @@ export const useCreateUser = routeAction$(
 );
 
 export default component$(() => {
+  const inputRef = useSignal<HTMLInputElement>();
   const createUser = useCreateUser();
 
+  useVisibleTask$(() => {
+    if (!inputRef.value) return;
+
+    inputRef.value.focus();
+  });
+
   return (
-    <section class="flex flex-col items-end space-y-2">
+    <section class="flex h-full flex-col items-center justify-end space-y-2">
       <Form action={createUser} class="w-80 space-y-2">
         <p class="flex flex-col space-y-1">
           <label class="mabry leading-none text-brand-blue" for="username">
             Usuario
           </label>
           <input
-            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red"
+            // eslint-disable-next-line prettier/prettier
+            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
             type="text"
+            ref={inputRef}
             id="username"
             name="username"
           />
@@ -76,7 +85,8 @@ export default component$(() => {
             Contraseña
           </label>
           <input
-            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red"
+            // eslint-disable-next-line prettier/prettier
+            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
             type="password"
             id="password"
             name="password"
@@ -89,7 +99,7 @@ export default component$(() => {
         ) : null}
         <button
           type="submit"
-          class="mabry w-full bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 focus-visible:outline focus-visible:outline-brand-blue"
+          class="mabry w-full border-2 border-brand-red bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 hover:bg-brand-stone hover:text-brand-red focus-visible:outline focus-visible:outline-brand-blue"
         >
           Crear
         </button>
@@ -97,7 +107,7 @@ export default component$(() => {
       <p class="wabry font-medium text-brand-blue">
         Ya tenés cuenta?{" "}
         <Link
-          class="text-brand-red underline decoration-brand-blue decoration-dotted underline-offset-1 outline-4 focus-visible:outline focus-visible:outline-brand-blue"
+          class="text-brand-red underline decoration-brand-blue decoration-dotted underline-offset-1 outline-4  hover:underline-offset-4 focus-visible:outline focus-visible:outline-brand-blue"
           href="/login"
         >
           Ingresá

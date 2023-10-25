@@ -10,7 +10,9 @@ module.exports = {
       colors: {
         brand: {
           blue: "#015fa0",
+          blueHover: "hsl(205 99% 32% / 20%)",
           red: "#ff0044",
+          redHover: "hsl(344 100% 50% / 20%)",
           stone: "#f2f2f2",
         },
         show: {

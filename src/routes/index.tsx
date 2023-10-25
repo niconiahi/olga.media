@@ -131,20 +131,21 @@ export default component$(() => {
             Buscar por titulo
           </label>
           <input
-            class="mabry w-full px-1 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-blue"
+            // eslint-disable-next-line prettier/prettier
+            class="mabry w-full px-1 text-brand-blue outline-4 hover:bg-brand-redHover focus-visible:outline focus-visible:outline-brand-blue"
             type="text"
             id="query"
             name="query"
           />
         </p>
         <button
-          class="mabry bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-blue"
+          class="mabry border-l-2 border-brand-red bg-brand-stone px-4 py-2 text-2xl text-brand-red outline-4 outline-offset-0 transition-colors duration-100 hover:bg-brand-red hover:text-brand-stone focus-visible:border-l-0 focus-visible:outline focus-visible:outline-brand-blue"
           type="submit"
         >
           Buscar
         </button>
       </Form>
-      <ul class="space-y-2">
+      <ul class="grow space-y-2">
         {cuts.value
           .slice()
           .reverse()

@@ -8,39 +8,54 @@ export default component$(() => {
       <header class="fixed left-0 right-0 flex items-center justify-between bg-transparent">
         <Link
           href="/"
-          class="ml-2 mt-2 flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:ml-8"
+          // eslint-disable-next-line prettier/prettier
+          class="ml-2 mt-2 flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:ml-8"
         >
-          <OlgaIcon class="h-8" />
+          <OlgaIcon class="h-9" />
         </Link>
         <nav class="mr-2 mt-2">
           <ul class="flex items-center space-x-2 ">
             <li class="flex">
               <a
                 href="/login"
-                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden"
+                // eslint-disable-next-line prettier/prettier
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
               >
                 <svg
                   class="h-8 text-brand-blue"
+                  viewBox="0 0 20 20"
+                  fill="none"
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
                 >
                   <path
-                    fill="none"
-                    d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
-                  ></path>
-                  <polyline fill="none" points="10 17 15 12 10 7"></polyline>
-                  <line x1="15" y1="12" x2="3" y2="12"></line>
+                    d="M13 1H17C17.5304 1 18.0391 1.21071 18.4142 1.58579C18.7893 1.96086 19 2.46957 19 3V17C19 17.5304 18.7893 18.0391 18.4142 18.4142C18.0391 18.7893 17.5304 19 17 19H13"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M8 15L13 10L8 5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13 10H1"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
                 </svg>
               </a>
             </li>
             <li class="flex ">
               <a
                 href="/navigate"
-                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden"
+                // eslint-disable-next-line prettier/prettier
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
               >
                 <svg
                   class="h-8 text-brand-blue"
@@ -74,7 +89,7 @@ export default component$(() => {
           </ul>
         </nav>
       </header>
-      <main class="mx-auto mt-[60px] grid flex-grow place-items-center px-2 pb-3 pt-2 md:max-w-max md:py-8">
+      <main class="mx-auto mt-[60px] h-full px-2 pb-3 pt-2 md:max-w-max md:py-8">
         <Slot />
       </main>
     </>
