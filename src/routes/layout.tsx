@@ -2,68 +2,77 @@ import type { ClassList, Signal } from "@builder.io/qwik";
 import { component$, Slot } from "@builder.io/qwik";
 import { Link } from "@builder.io/qwik-city";
 
-export const Nav = component$<{ class: ClassList | Signal<ClassList> }>(
-  (props) => {
-    return (
-      <nav class={props.class}>
-        <ul>
-          <li>
-            <Link
-              class="text-brand-blue outline-2 outline-offset-1 focus-visible:outline focus-visible:outline-brand-red"
-              href="/"
-            >
-              Cortes
-            </Link>
-          </li>
-        </ul>
-      </nav>
-    );
-  },
-);
-
 export default component$(() => {
   return (
     <>
       <header class="fixed left-0 right-0 flex items-center justify-between bg-transparent">
         <Link
           href="/"
-          class="ml-2 mt-2 flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red"
+          class="ml-2 mt-2 flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:ml-8"
         >
           <OlgaIcon class="h-8" />
         </Link>
-        <Nav class="mabry hidden md:flex" />
-        <button
-          aria-label="Open menu"
-          class="mr-2 mt-2 border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden"
-        >
-          <svg
-            class="h-8 text-brand-blue"
-            viewBox="0 0 14 14"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M1 7H13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="square"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M1 1H13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="square"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M1 13H13"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="square"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
+        <nav class="mr-2 mt-2">
+          <ul class="flex items-center space-x-2 ">
+            <li class="flex">
+              <a
+                href="/login"
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden"
+              >
+                <svg
+                  class="h-8 text-brand-blue"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path
+                    fill="none"
+                    d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"
+                  ></path>
+                  <polyline fill="none" points="10 17 15 12 10 7"></polyline>
+                  <line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+              </a>
+            </li>
+            <li class="flex ">
+              <a
+                href="/navigate"
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden"
+              >
+                <svg
+                  class="h-8 text-brand-blue"
+                  viewBox="0 0 14 14"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 7H13"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="square"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M1 1H13"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="square"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M1 13H13"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="square"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </nav>
       </header>
       <main class="mx-auto mt-[60px] grid flex-grow place-items-center px-2 pb-3 pt-2 md:max-w-max md:py-8">
         <Slot />
