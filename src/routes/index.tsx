@@ -132,14 +132,14 @@ export default component$(() => {
           </label>
           <input
             // eslint-disable-next-line prettier/prettier
-            class="mabry w-full px-1 text-brand-blue outline-4 hover:bg-brand-redHover focus-visible:outline focus-visible:outline-brand-blue"
+            class="mabry w-full px-1 text-brand-blue outline-4 md:hover:bg-brand-redHover focus-visible:outline focus-visible:outline-brand-blue"
             type="text"
             id="query"
             name="query"
           />
         </p>
         <button
-          class="mabry border-l-2 border-brand-red bg-brand-stone px-4 py-2 text-2xl text-brand-red outline-4 outline-offset-0 transition-colors duration-100 hover:bg-brand-red hover:text-brand-stone focus-visible:border-l-0 focus-visible:outline focus-visible:outline-brand-blue"
+          class="mabry border-l-2 border-brand-red bg-brand-stone px-4 py-2 text-2xl text-brand-red outline-4 outline-offset-0 transition-colors duration-100 focus-visible:border-l-0 focus-visible:outline focus-visible:outline-brand-blue md:hover:bg-brand-red md:hover:text-brand-stone"
           type="submit"
         >
           Buscar
@@ -186,10 +186,10 @@ export default component$(() => {
                           <li key={`cut-${day}-${show}-${hash}`} class="b">
                             <a
                               class={clsx([
-                                "flex w-full justify-between space-x-2 p-0.5 font-medium hover:cursor-pointer",
+                                "flex w-full justify-between space-x-2 p-0.5 font-medium md:hover:cursor-pointer",
                                 show === "sone-que-volaba"
-                                  ? "outline-4 hover:bg-show-soneQueVolaba-blueHover focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue"
-                                  : "outline-4 hover:bg-show-seriaIncreible-purpleHover focus-visible:outline focus-visible:outline-show-seriaIncreible-purple",
+                                  ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
+                                  : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
                               ])}
                               target="_blank"
                               href={
