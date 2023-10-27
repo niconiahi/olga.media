@@ -65,11 +65,16 @@ export default component$(() => {
           // eslint-disable-next-line prettier/prettier
           ref={logoRef}
           tabIndex={location.url.pathname === "/" ? -1 : 0}
-          class="pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+          class={clsx([
+            "pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
+            location.url.pathname === "/" &&
+              // eslint-disable-next-line prettier/prettier
+              "md:-translate-x-0.5 md:-translate-y-1 md:shadow-brandBlue md:transition-all md:duration-100 md:border-brand-red",
+          ])}
         >
           <OlgaIcon class="h-9" />
         </Link>
-        <nav class="hidden w-max bg-brand-stone md:block">
+        <nav class="hidden w-max  md:block">
           <ul class="flex flex-row items-center space-x-2">
             <li
               class={clsx("flex", [
@@ -79,7 +84,7 @@ export default component$(() => {
             >
               <Link
                 // eslint-disable-next-line prettier/prettier
-                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5", location.url.pathname === '/cuts/' && 'border-brand-red text-brand-red shadow-soneQueVolaba transition-shadow duration-100'])}
+                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5 bg-brand-stone", location.url.pathname === '/cuts/' && 'border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100'])}
                 ref={cutsRef}
                 tabIndex={location.url.pathname === "/cuts/" ? -1 : 0}
                 href="/cuts"
@@ -95,7 +100,7 @@ export default component$(() => {
             >
               <Link
                 // eslint-disable-next-line prettier/prettier
-                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5", location.url.pathname === '/ranking/' && 'border-brand-red text-brand-red shadow-soneQueVolaba transition-shadow duration-100'])}
+                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5 bg-brand-stone", location.url.pathname === '/ranking/' && 'border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100'])}
                 tabIndex={location.url.pathname === "/ranking/" ? -1 : 0}
                 ref={rankingRef}
                 href="/ranking"
@@ -124,7 +129,8 @@ export default component$(() => {
                 class={clsx(["border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red pointer-events-auto"], ["/login/", "/join/"].some(
                     (pathname) => pathname === location.url.pathname,
                   ) &&
-                    "border-brand-red shadow-soneQueVolaba transition-shadow duration-100",
+                    // eslint-disable-next-line prettier/prettier
+                    "border-brand-red shadow-brandBlue transition-shadow duration-100",
                 )}
               >
                 <svg

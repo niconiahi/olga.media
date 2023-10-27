@@ -3,6 +3,7 @@ import { LuciaError, lucia } from "lucia";
 import { d1 } from "@lucia-auth/adapter-sqlite";
 import type { D1Database } from "@cloudflare/workers-types";
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import clsx from "clsx";
 
 export const initializeLucia = (db: D1Database) => {
   const auth = lucia({
@@ -61,6 +62,9 @@ export default component$(() => {
     inputRef.value.focus();
   });
 
+  console.log("loginUser.value?.failed:", loginUser.value?.failed);
+  console.log("loginUser.value.message:", loginUser.value?.message);
+
   return (
     <section class="px-auto flex h-full flex-1 flex-col items-center justify-center space-y-2">
       <Form action={loginUser} class="w-80 space-y-2">
@@ -75,7 +79,28 @@ export default component$(() => {
             ref={inputRef}
             id="username"
             name="username"
+            aria-invalid={
+              loginUser.value?.fieldErrors?.username ||
+              (loginUser.value?.failed && loginUser.value.message)
+                ? "true"
+                : undefined
+            }
+            aria-errormessage="username-error"
           />
+          <span
+            id="username-error"
+            class={clsx([
+              "mabry text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1",
+              loginUser.value?.fieldErrors?.username ||
+              (loginUser.value?.failed && loginUser.value.message)
+                ? "visible"
+                : "invisible",
+            ])}
+          >
+            {(loginUser.value?.fieldErrors?.username ||
+              (loginUser.value?.failed && loginUser.value.message)) ??
+              "Olga"}
+          </span>
         </p>
         <p class="flex flex-col space-y-1">
           <label class="mabry leading-none text-brand-blue" for="password">
@@ -87,13 +112,26 @@ export default component$(() => {
             type="password"
             id="password"
             name="password"
+            aria-invalid={
+              loginUser.value?.fieldErrors?.username ? "true" : undefined
+            }
+            aria-errormessage="username-error"
           />
+          <span
+            id="password-error"
+            class={clsx([
+              "mabry text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1",
+              loginUser.value?.fieldErrors?.password ? "visible" : "invisible",
+            ])}
+          >
+            {loginUser.value?.fieldErrors?.password ?? "Olga"}
+          </span>
         </p>
-        {loginUser.value?.failed && loginUser.value.message ? (
+        {/* {loginUser.value?.failed && loginUser.value.message ? (
           <p class="mabry text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1">
             {loginUser.value.message}
           </p>
-        ) : null}
+        ) : null} */}
         <button
           type="submit"
           class="mabry w-full border-2 border-brand-red bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 focus-visible:outline focus-visible:outline-brand-blue md:hover:bg-brand-stone md:hover:text-brand-red"
@@ -104,7 +142,7 @@ export default component$(() => {
       <p class="wabry w-80 text-end font-medium text-brand-blue">
         Aún no tenés cuenta?{" "}
         <Link
-          class="text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1 outline-4 focus-visible:outline focus-visible:outline-brand-blue md:hover:underline-offset-4"
+          class="text-brand-blue underline decoration-brand-red decoration-dotted decoration-2 underline-offset-1 outline-4 transition-all duration-100 focus-visible:outline focus-visible:outline-brand-blue md:hover:underline-offset-4"
           href="/join"
         >
           Registrate
