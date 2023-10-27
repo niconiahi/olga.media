@@ -40,7 +40,8 @@ export const onGet: RequestHandler = async ({
     .execute();
 
   cacheControl({
-    staleWhileRevalidate: 60 * 60 * 24 * 7,
+    // TODO: set real value, this is for testing purposes
+    staleWhileRevalidate: 60,
   });
   json(200, cuts);
 };

@@ -7,11 +7,8 @@ import {
   routeAction$,
   z,
 } from "@builder.io/qwik-city";
-import type { D1Database } from "@cloudflare/workers-types";
 import clsx from "clsx";
-import type { DB } from "db/types";
-import { Kysely } from "kysely";
-import { D1Dialect } from "kysely-d1";
+import { cutsSchema } from "~/routes/cuts/get/all";
 
 // the "start" comes in the form of "dd:dd:dd"
 function getSeconds(start: string) {
@@ -32,26 +29,16 @@ function getSeconds(start: string) {
   return seconds;
 }
 
-export const useCuts = routeLoader$(async ({ platform, request }) => {
-  const env = platform.env as { DB: D1Database };
-  const db = new Kysely<DB>({
-    dialect: new D1Dialect({ database: env.DB }),
-  });
-  const cuts = await db
-    .selectFrom("cut")
-    .innerJoin("video", "video.id", "cut.video_id")
-    .select([
-      "video.day",
-      "video.hash",
-      "video.show",
-      "video.month",
-      "cut.label",
-      "cut.start",
-    ])
-    .execute();
+export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
   const query = searchParams.get("query");
+  const raws = await (await fetch(url.origin + "/cuts/get/all")).json();
+  const result = cutsSchema.safeParse(raws);
+  if (!result.success) {
+    throw new Error(result.error.toString());
+  }
+  const cuts = result.data;
   const cutsByDay = Object.entries(
     cuts
       .filter((cut) => {
