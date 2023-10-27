@@ -6,23 +6,65 @@ import clsx from "clsx";
 export default component$(() => {
   const location = useLocation();
   const logoRef = useSignal<HTMLInputElement>();
+  const rankingRef = useSignal<HTMLAnchorElement>();
+  const loginRef = useSignal<HTMLAnchorElement>();
+  const cutsRef = useSignal<HTMLAnchorElement>();
+
+  useVisibleTask$(({ track }) => {
+    track(() => location.url.pathname);
+    if (!rankingRef.value) return;
+
+    if (location.url.pathname === "/ranking/") {
+      rankingRef.value.blur();
+    }
+  });
 
   useVisibleTask$(({ track }) => {
     track(() => location.url.pathname);
     if (!logoRef.value) return;
 
-    if (location.url.pathname === "/ranking/") {
-      logoRef.value.focus();
+    if (location.url.pathname === "/") {
+      logoRef.value.blur();
+    }
+  });
+
+  useVisibleTask$(({ track }) => {
+    track(() => location.url.pathname);
+    if (!cutsRef.value) return;
+
+    if (location.url.pathname === "/cuts/") {
+      cutsRef.value.blur();
+    }
+  });
+
+  useVisibleTask$(({ track }) => {
+    track(() => location.url.pathname);
+    if (!loginRef.value) return;
+
+    if (
+      ["/login/", "/join/"].some(
+        (pathname) => pathname === location.url.pathname,
+      )
+    ) {
+      loginRef.value.blur();
     }
   });
 
   return (
     <>
-      <header class="pointer-events-none fixed left-0 right-0 flex items-center justify-between bg-transparent px-2 pt-2 md:px-8">
+      <header
+        class={clsx([
+          "pointer-events-none fixed left-0 right-0 flex items-center justify-between bg-transparent px-2 pt-2",
+          ["/cuts/", "/"].some((pathname) => pathname === location.url.pathname)
+            ? "md:pl-8 md:pr-7"
+            : "md:px-8",
+        ])}
+      >
         <Link
           href="/"
           // eslint-disable-next-line prettier/prettier
           ref={logoRef}
+          tabIndex={location.url.pathname === "/" ? -1 : 0}
           class="pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
         >
           <OlgaIcon class="h-9" />
@@ -38,6 +80,7 @@ export default component$(() => {
               <Link
                 // eslint-disable-next-line prettier/prettier
                 class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5", location.url.pathname === '/cuts/' && 'border-brand-red text-brand-red shadow-soneQueVolaba'])}
+                ref={cutsRef}
                 tabIndex={location.url.pathname === "/cuts/" ? -1 : 0}
                 href="/cuts"
               >
@@ -54,6 +97,7 @@ export default component$(() => {
                 // eslint-disable-next-line prettier/prettier
                 class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5", location.url.pathname === '/ranking/' && 'border-brand-red text-brand-red shadow-soneQueVolaba'])}
                 tabIndex={location.url.pathname === "/ranking/" ? -1 : 0}
+                ref={rankingRef}
                 href="/ranking"
               >
                 Ranking
@@ -68,6 +112,7 @@ export default component$(() => {
             >
               <Link
                 href="/login"
+                ref={loginRef}
                 tabIndex={
                   ["/login/", "/join/"].some(
                     (pathname) => pathname === location.url.pathname,

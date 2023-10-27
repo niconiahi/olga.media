@@ -51,6 +51,19 @@ body, input {
   background-color: theme(colors.brand.stone);
 }
 
+html::-webkit-scrollbar {
+  position: absolute;
+  width: 4px;
+  height: 20px;
+  margin-right: 2px;
+  background: theme(colors.brand.stone);
+}
+
+html::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background: theme(colors.brand.blue);
+}
+
 body {
   display: flex;
   flex-direction: column;

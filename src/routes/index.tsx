@@ -1,4 +1,4 @@
-import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import {
   routeLoader$,
   type DocumentHead,
@@ -105,13 +105,6 @@ export const useSearch = routeAction$(
 export default component$(() => {
   const cuts = useCuts();
   const search = useSearch();
-  const inputRef = useSignal<HTMLInputElement>();
-
-  useVisibleTask$(() => {
-    if (!inputRef.value) return;
-
-    inputRef.value.focus();
-  });
 
   return (
     <>
@@ -129,7 +122,6 @@ export default component$(() => {
               value={cuts.value.query}
               // eslint-disable-next-line prettier/prettier
               class="mabry w-full px-1 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-blue md:hover:bg-brand-redHover"
-              ref={inputRef}
               type="text"
               id="query"
               name="query"
@@ -143,7 +135,7 @@ export default component$(() => {
           </button>
         </Form>
       </section>
-      <section class="mt-2">
+      <section class="mt-2 flex">
         <ul class="grow space-y-2">
           {cuts.value.cutsByDay
             .slice()
