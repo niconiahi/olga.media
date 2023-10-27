@@ -14,18 +14,19 @@
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/cloudflare-pages/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
+    "db:migrate": "wrangler d1 migrations apply olga-tv",
+    "db:migrate:local": "wrangler d1 migrations apply olga-tv --local",
+    "db:types": "npx kysely-codegen --out-file db/types.ts --dialect=sqlite",
     "deploy": "wrangler pages publish ./dist",
     "dev": "vite --mode ssr",
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
     "fmt": "prettier --write .",
-    "db:migrate:local": "wrangler d1 migrations apply olga-tv --local",
-    "db:types": "npx kysely-codegen --out-file db/types.ts --dialect=sqlite",
-    "db:migrate": "wrangler d1 migrations apply olga-tv",
     "fmt.check": "prettier --check .",
     "lint": "eslint \"src/**/*.ts*\"",
     "preview": "qwik build preview && vite preview --open",
     "serve": "wrangler pages dev ./dist",
     "start": "vite --open --mode ssr",
+    "test.unit": "vitest ",
     "qwik": "qwik"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "@types/node": "^20.4.5",
     "@typescript-eslint/eslint-plugin": "6.2.0",
     "@typescript-eslint/parser": "6.2.0",
+    "@vitest/ui": "^0.33.0",
     "autoprefixer": "^10.4.14",
     "better-sqlite3": "^9.0.0",
     "eslint": "8.45.0",
@@ -51,6 +53,7 @@
     "undici": "5.22.1",
     "vite": "4.4.7",
     "vite-tsconfig-paths": "4.2.0",
+    "vitest": "^0.33.0",
     "wrangler": "^3.13.1"
   },
   "dependencies": {

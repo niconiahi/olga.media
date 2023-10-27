@@ -1,9 +1,10 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import type { DB } from "db/types";
 import { Form, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import type { D1Database } from "@cloudflare/workers-types";
 import { Kysely } from "kysely";
 import { D1Dialect } from "kysely-d1";
+import { dedupe, getRaws } from "~/utils/cut";
 
 const videosSchema = z.array(
   z.object({
@@ -21,6 +22,8 @@ const cutsSchema = z.array(
   }),
 );
 
+export type Cuts = z.infer<typeof cutsSchema>;
+
 function getShow(title: string): string {
   const regex = /(Ser[ií]a\sIncre[ií]ble|So[ñn]é?\sQue\sVolaba)/g;
   const matches = title.match(regex);
@@ -36,34 +39,14 @@ export async function getCuts(hash: string, videoId: number) {
   const url = `https://www.youtube.com/watch?v=${hash}`;
   const res = await fetch(url);
   const html = await res.text();
-  const regex = /(\d+:\d{2}(?::\d{2})?) (.*?)(?=\\n|$)/g;
-  const raws = [] as unknown[];
-
-  let match;
-  while ((match = regex.exec(html)) !== null) {
-    const [, start, label] = match;
-    raws.push({
-      start,
-      label,
-      videoId,
-    });
-  }
-
+  const raws = getRaws(html, videoId);
   const result = cutsSchema.safeParse(raws);
   if (!result.success) {
     throw new Error(result.error.toString());
   }
 
   const cuts = result.data;
-  // the list repeats over and over, so we find the index of the second start
-  const index = cuts
-    .slice(1, cuts.length)
-    .findIndex(
-      (element) => element.start === "0:00" || element.start === "00:00",
-    );
-
-  // and we cut it there
-  return cuts.slice(0, index + 1);
+  return dedupe(cuts);
 }
 
 export const useAddCuts = routeAction$(
@@ -129,7 +112,6 @@ export const useAddCuts = routeAction$(
       .select(["title", "id", "hash"])
       .where((eb) => eb.or(videos.map(({ hash }) => eb("hash", "=", hash))))
       .execute();
-
     const cuts = (
       await Promise.all(addedVideos.map(({ hash, id }) => getCuts(hash, id)))
     ).flat();
@@ -155,31 +137,50 @@ export const useAddCuts = routeAction$(
 );
 
 export default component$(() => {
+  const inputRef = useSignal<HTMLInputElement>();
   const action = useAddCuts();
 
+  useVisibleTask$(() => {
+    if (!inputRef.value) return;
+
+    inputRef.value.focus();
+  });
+
   return (
-    <main>
-      <Form action={action}>
-        <p>
-          <label for="day">Dia</label>
-          <input name="day" id="day" type="number" />
+    <section class="flex h-full flex-1 flex-col items-center justify-center space-y-2">
+      <Form action={action} class="w-80 space-y-2">
+        <p class="flex flex-col space-y-1">
+          <label class="mabry leading-none text-brand-blue" for="day">
+            Dia
+          </label>
+          <input
+            // eslint-disable-next-line prettier/prettier
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            type="number"
+            ref={inputRef}
+            id="day"
+            name="day"
+          />
         </p>
-        <p>
-          <label for="month">Mes</label>
-          <input name="month" id="month" type="number" />
+        <p class="flex flex-col space-y-1">
+          <label class="mabry leading-none text-brand-blue" for="month">
+            Mes
+          </label>
+          <input
+            // eslint-disable-next-line prettier/prettier
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            type="number"
+            id="month"
+            name="month"
+          />
         </p>
-        <button type="submit">Agregar videos</button>
+        <button
+          type="submit"
+          class="mabry w-full border-2 border-brand-red bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 focus-visible:outline focus-visible:outline-brand-blue md:hover:bg-brand-stone md:hover:text-brand-red"
+        >
+          Agregar
+        </button>
       </Form>
-      {action.value && action.value.length > 0 ? (
-        <ul>
-          {action.value.map(({ title }) => (
-            <li key={`video_${title}`}>{title}</li>
-          ))}
-        </ul>
-      ) : null}
-      {action.status && action.status === 409 ? (
-        <h1>Todos los videos de este dia fueron agregados</h1>
-      ) : null}
-    </main>
+    </section>
   );
 });

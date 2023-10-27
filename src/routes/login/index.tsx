@@ -62,7 +62,7 @@ export default component$(() => {
   });
 
   return (
-    <section class="flex h-full flex-col items-end justify-center space-y-2">
+    <section class="px-auto flex h-full flex-1 flex-col items-center justify-center space-y-2">
       <Form action={loginUser} class="w-80 space-y-2">
         <p class="flex flex-col space-y-1">
           <label class="mabry leading-none text-brand-blue" for="username">
@@ -70,7 +70,7 @@ export default component$(() => {
           </label>
           <input
             // eslint-disable-next-line prettier/prettier
-            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
             type="text"
             ref={inputRef}
             id="username"
@@ -83,7 +83,7 @@ export default component$(() => {
           </label>
           <input
             // eslint-disable-next-line prettier/prettier
-            class="mabry border-2 border-brand-blue px-1 py-2.5 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
             type="password"
             id="password"
             name="password"
@@ -101,8 +101,8 @@ export default component$(() => {
           Ingresar
         </button>
       </Form>
-      <p class="wabry font-medium text-brand-blue">
-        Ya tenés cuenta?{" "}
+      <p class="wabry w-80 text-end font-medium text-brand-blue">
+        Aún no tenés cuenta?{" "}
         <Link
           class="text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1 outline-4 focus-visible:outline focus-visible:outline-brand-blue md:hover:underline-offset-4"
           href="/join"

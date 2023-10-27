@@ -3,21 +3,21 @@ import { Link } from "@builder.io/qwik-city";
 
 export default component$(() => {
   return (
-    <nav class="flex h-full flex-col items-end justify-center space-y-2">
-      <ul class="space-y-3">
-        <li>
+    <nav>
+      <ul class="space-y-2">
+        <li class="flex">
           <Link
             // eslint-disable-next-line prettier/prettier
-            class="mabry px-4 py-2 text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
-            href="/"
+            class="mabry w-full text-center px-4 py-2.5 text-lg text-brand-blue outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue"
+            href="/cuts"
           >
             Cortes
           </Link>
         </li>
-        <li>
+        <li class="flex">
           <Link
             // eslint-disable-next-line prettier/prettier
-            class="mabry px-4 py-2 text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            class="mabry text-center w-full px-4 py-2.5 text-lg text-brand-blue outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue"
             href="/ranking"
           >
             Ranking

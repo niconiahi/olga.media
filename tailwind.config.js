@@ -4,27 +4,28 @@ module.exports = {
   theme: {
     extend: {
       boxShadow: {
-        seriaIncreible: "#6f49a0 2px 4px 0px 0px",
-        soneQueVolaba: "#006ba6 2px 4px 0px 0px",
+        seriaIncreible: "#6F49A0 2px 4px 0px 0px",
+        soneQueVolaba: "#006BA6 2px 4px 0px 0px",
+        brandBlue: "#015FA0 2px 4px 0px 0px",
       },
       colors: {
         brand: {
-          blue: "#015fa0",
-          blueHover: "hsl(205 99% 32% / 20%)",
-          red: "#ff0044",
-          redHover: "hsl(344 100% 50% / 20%)",
-          stone: "#f2f2f2",
+          blue: "#015FA0",
+          blueHover: "#B3E0FF",
+          red: "#FF0044",
+          redHover: "#FFB2C7",
+          stone: "#F2F2F2",
         },
         show: {
           seriaIncreible: {
-            yellow: "#f8c552",
-            purple: "#6f49a0",
-            purpleHover: "hsl(266 37% 46% / 20%)",
+            yellow: "#F8C552",
+            purple: "#6F49A0",
+            purpleHover: "#D7CAE7",
           },
           soneQueVolaba: {
-            blue: "#006ba6",
-            blueHover: "hsl(201 100% 33% / 20%)",
-            orange: "#ff9600",
+            blue: "#006BA6",
+            blueHover: "#B2E4FF",
+            orange: "#FF9600",
           },
         },
       },

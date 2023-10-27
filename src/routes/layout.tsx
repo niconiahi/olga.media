@@ -1,25 +1,130 @@
 import type { ClassList, Signal } from "@builder.io/qwik";
-import { component$, Slot } from "@builder.io/qwik";
-import { Link } from "@builder.io/qwik-city";
+import { component$, Slot, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import { Link, useLocation } from "@builder.io/qwik-city";
+import clsx from "clsx";
 
 export default component$(() => {
+  const location = useLocation();
+  const logoRef = useSignal<HTMLInputElement>();
+
+  useVisibleTask$(({ track }) => {
+    track(() => location.url.pathname);
+    if (!logoRef.value) return;
+
+    if (location.url.pathname === "/ranking/") {
+      logoRef.value.focus();
+    }
+  });
+
   return (
     <>
-      <header class="fixed left-0 right-0 flex items-center justify-between bg-transparent">
+      <header class="pointer-events-none fixed left-0 right-0 flex items-center justify-between bg-transparent px-2 pt-2 md:px-8">
         <Link
           href="/"
           // eslint-disable-next-line prettier/prettier
-          class="ml-2 mt-2 flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:ml-8"
+          ref={logoRef}
+          class="pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
         >
           <OlgaIcon class="h-9" />
         </Link>
-        <nav class="mr-2 mt-2">
-          <ul class="flex items-center space-x-2 ">
+        <nav class="hidden w-max bg-brand-stone md:block">
+          <ul class="flex flex-row items-center space-x-2">
+            <li
+              class={clsx("flex", [
+                location.url.pathname === "/cuts/" &&
+                  "-translate-x-0.5 -translate-y-1",
+              ])}
+            >
+              <Link
+                // eslint-disable-next-line prettier/prettier
+                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5", location.url.pathname === '/cuts/' && 'border-brand-red text-brand-red shadow-soneQueVolaba'])}
+                tabIndex={location.url.pathname === "/cuts/" ? -1 : 0}
+                href="/cuts"
+              >
+                Cortes
+              </Link>
+            </li>
+            <li
+              class={clsx("flex", [
+                location.url.pathname === "/ranking/" &&
+                  "-translate-x-0.5 -translate-y-1",
+              ])}
+            >
+              <Link
+                // eslint-disable-next-line prettier/prettier
+                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5", location.url.pathname === '/ranking/' && 'border-brand-red text-brand-red shadow-soneQueVolaba'])}
+                tabIndex={location.url.pathname === "/ranking/" ? -1 : 0}
+                href="/ranking"
+              >
+                Ranking
+              </Link>
+            </li>
+            <li
+              class={clsx("flex", [
+                ["/login/", "/join/"].some(
+                  (pathname) => pathname === location.url.pathname,
+                ) && "-translate-x-0.5 -translate-y-1",
+              ])}
+            >
+              <Link
+                href="/login"
+                tabIndex={
+                  ["/login/", "/join/"].some(
+                    (pathname) => pathname === location.url.pathname,
+                  )
+                    ? -1
+                    : 0
+                }
+                // eslint-disable-next-line prettier/prettier
+                class={clsx(["border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red pointer-events-auto"], ["/login/", "/join/"].some(
+                    (pathname) => pathname === location.url.pathname,
+                  ) && "border-brand-red shadow-soneQueVolaba",
+                )}
+              >
+                <svg
+                  class={clsx([
+                    "h-8 text-brand-blue",
+                    ["/login/", "/join/"].some(
+                      (pathname) => pathname === location.url.pathname,
+                    ) && "text-brand-red",
+                  ])}
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M13 1H17C17.5304 1 18.0391 1.21071 18.4142 1.58579C18.7893 1.96086 19 2.46957 19 3V17C19 17.5304 18.7893 18.0391 18.4142 18.4142C18.0391 18.7893 17.5304 19 17 19H13"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M8 15L13 10L8 5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M13 10H1"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+        <nav class="pointer-events-auto md:hidden">
+          <ul class="flex items-center space-x-2">
             <li class="flex">
-              <a
+              <Link
                 href="/login"
                 // eslint-disable-next-line prettier/prettier
-                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
               >
                 <svg
                   class="h-8 text-brand-blue"
@@ -49,13 +154,13 @@ export default component$(() => {
                     stroke-linejoin="round"
                   />
                 </svg>
-              </a>
+              </Link>
             </li>
-            <li class="flex ">
-              <a
+            <li class="flex">
+              <Link
                 href="/navigate"
                 // eslint-disable-next-line prettier/prettier
-                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
               >
                 <svg
                   class="h-8 text-brand-blue"
@@ -84,12 +189,12 @@ export default component$(() => {
                     stroke-linejoin="round"
                   />
                 </svg>
-              </a>
+              </Link>
             </li>
           </ul>
         </nav>
       </header>
-      <main class="mx-auto mt-[60px] h-full px-2 pb-3 pt-2 md:max-w-max md:py-8">
+      <main class="mt-[60px] flex flex-1 flex-col px-2 pb-3 pt-2 md:mx-auto md:max-w-max md:px-8 md:pb-8">
         <Slot />
       </main>
     </>
