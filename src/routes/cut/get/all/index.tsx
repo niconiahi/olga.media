@@ -6,6 +6,7 @@ import { D1Dialect } from "kysely-d1";
 
 export const cutsSchema = z.array(
   z.object({
+    id: z.number(),
     start: z.string(),
     label: z.string(),
     day: z.number(),
@@ -34,6 +35,7 @@ export const onGet: RequestHandler = async ({
       "video.hash",
       "video.show",
       "video.month",
+      "cut.id",
       "cut.label",
       "cut.start",
     ])

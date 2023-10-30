@@ -4,47 +4,33 @@ import type { DB } from "db/types";
 import { Kysely } from "kysely";
 import { D1Dialect } from "kysely-d1";
 
-const cutsSchema = z.array(
+const userIdSchema = z.string();
+export const upvotesSchema = z.array(
   z.object({
-    start: z.string(),
-    label: z.string(),
-    day: z.number(),
-    hash: z.string(),
-    month: z.number(),
-    show: z.string(),
+    cut_id: z.number(),
+    id: z.number(),
+    user_id: z.string(),
   }),
 );
 
-export type Cuts = z.infer<typeof cutsSchema>;
+export type Upvotes = z.infer<typeof upvotesSchema>;
 
-const userIdSchema = z.string();
-
-export const onGet: RequestHandler = async ({
-  json,
-  platform,
-  request,
-  cacheControl,
-}) => {
+export const onGet: RequestHandler = async ({ json, platform, request }) => {
   const url = new URL(request.url);
   const result = userIdSchema.safeParse(url.searchParams.get("userId"));
   if (!result.success) {
     throw new Error(result.error.toString());
   }
-
   const userId = result.data;
   const env = platform.env as { DB: D1Database };
   const db = new Kysely<DB>({
     dialect: new D1Dialect({ database: env.DB }),
   });
-  const cuts = await db
+  const upvotes = await db
     .selectFrom("upvote")
-    .select("upvote.cut_id")
+    .selectAll()
     .where("user_id", "=", userId)
     .execute();
 
-  cacheControl({
-    // TODO: set real value, this is for testing purposes
-    staleWhileRevalidate: 60,
-  });
-  json(200, cuts);
+  json(200, upvotes);
 };

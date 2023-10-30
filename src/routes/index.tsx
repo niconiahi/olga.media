@@ -1,3 +1,4 @@
+import type { ClassList, Signal } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
 import {
   routeLoader$,
@@ -8,8 +9,11 @@ import {
   z,
 } from "@builder.io/qwik-city";
 import clsx from "clsx";
+import type { Cuts } from "~/routes/cut/get/all";
 import { cutsSchema } from "~/routes/cut/get/all";
 import { getUser } from "~/utils/session";
+import { upvotesSchema, type Upvotes } from "~/routes/upvote/get/all";
+import { upvoteSchema } from "~/routes/upvote/create/[id]";
 
 // the "start" comes in the form of "dd:dd:dd"
 function getSeconds(start: string) {
@@ -63,15 +67,7 @@ export const useCuts = routeLoader$(async ({ request }) => {
           : true;
       })
       .reduce<{
-        [id: string]: {
-          [show: string]: {
-            label: string;
-            start: string;
-            day: number;
-            hash: string;
-            month: number;
-          }[];
-        };
+        [id: string]: { [show: string]: Cuts };
       }>((prevDays, cut) => {
         const day = `${cut.day}/${cut.month}`;
         const { show } = cut;
@@ -100,6 +96,27 @@ export const useUserId = routeLoader$(async (requestEvent) => {
   return { userId: user?.userId };
 });
 
+export const useUpvotes = routeLoader$(async (requestEvent) => {
+  const { request } = requestEvent;
+  const url = new URL(request.url);
+  const user = await getUser(requestEvent);
+
+  if (!user?.userId) {
+    return [] as Upvotes;
+  }
+
+  const raws = await (
+    await fetch(url.origin + "/upvote/get/all" + `?userId=${user.userId}`)
+  ).json();
+  const result = upvotesSchema.safeParse(raws);
+  if (!result.success) {
+    throw new Error(result.error.toString());
+  }
+  const upvotes = result.data;
+
+  return upvotes;
+});
+
 export const useSearch = routeAction$(
   async ({ query }, { redirect }) => {
     throw redirect(302, query === "" ? "/" : `/?query=${query}`);
@@ -110,15 +127,37 @@ export const useSearch = routeAction$(
 );
 
 export const useUpvote = routeAction$(
-  async ({ isUpdated, userId }, { redirect }) => {
+  async ({ isUpvoted, userId, cutId }, { redirect, request, error }) => {
     if (!userId) {
       throw redirect(302, `/login`);
     }
 
-    return isUpdated;
+    const url = new URL(request.url);
+
+    if (isUpvoted === "true") {
+      return isUpvoted;
+    } else {
+      const data = await (
+        await fetch(url.origin + "/upvote/create/[id]", {
+          method: "POST",
+          body: JSON.stringify({ userId, cutId }),
+        })
+      ).json();
+      const result = upvoteSchema.safeParse(data);
+      if (!result.success) {
+        throw error(
+          404,
+          `the expected structure of the created "upvote" is incorrect`,
+        );
+      }
+      const upvote = result.data;
+
+      return upvote;
+    }
   },
   zod$({
-    isUpdated: z.coerce.boolean(),
+    cutId: z.string(),
+    isUpvoted: z.union([z.literal("true"), z.literal("false")]),
     userId: z.union([z.coerce.string(), z.undefined()]),
   }),
 );
@@ -126,6 +165,9 @@ export const useUpvote = routeAction$(
 export default component$(() => {
   const cuts = useCuts();
   const search = useSearch();
+  const upvote = useUpvote();
+  const userId = useUserId();
+  const upvotes = useUpvotes();
 
   return (
     <>
@@ -160,7 +202,7 @@ export default component$(() => {
           {cuts.value.cutsByDay
             .slice()
             .reverse()
-            .map(([day, cut], index) => (
+            .map(([day, cuts], index) => (
               <li key={`day-${day}`} class="space-y-2">
                 <h4
                   class={clsx([
@@ -171,7 +213,7 @@ export default component$(() => {
                   {day}
                 </h4>
                 <ul class="space-y-3">
-                  {Object.entries(cut).map(([_show, cuts]) => {
+                  {Object.entries(cuts).map(([_show, cuts]) => {
                     const show = _show.toLocaleLowerCase().includes("volaba")
                       ? "sone-que-volaba"
                       : "seria-increible";
@@ -193,46 +235,96 @@ export default component$(() => {
                           <SoneQueVolabaIcon />
                         ) : null}
                         <ul>
-                          {cuts.map(({ label, start, hash }) => {
-                            const isUpvoted = false;
-
-                            return (
-                              <li
-                                key={`cut-${day}-${show}-${hash}`}
-                                class="flex items-center space-x-2 py-0.5"
-                              >
-                                <a
-                                  class={clsx([
-                                    "flex w-full items-center justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
-                                    show === "sone-que-volaba"
-                                      ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
-                                      : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
-                                  ])}
-                                  target="_blank"
-                                  href={
-                                    `https://www.youtube.com/watch?v=${hash}` +
-                                    "&t=" +
-                                    getSeconds(start)
-                                  }
+                          {cuts
+                            .map((cut) => ({
+                              ...cut,
+                              isUpvoted: upvotes.value.some(
+                                ({ cut_id }) => cut_id === cut.id,
+                              ),
+                            }))
+                            .map(({ label, start, hash, id, isUpvoted }) => {
+                              return (
+                                <li
+                                  key={`cut-${day}-${show}-${hash}`}
+                                  class="flex items-center space-x-2 py-0.5"
                                 >
-                                  <span
+                                  <a
                                     class={clsx([
-                                      "mabry",
+                                      "flex w-full items-center justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
                                       show === "sone-que-volaba"
-                                        ? "text-show-soneQueVolaba-blue"
-                                        : "text-show-seriaIncreible-purple",
+                                        ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
+                                        : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
                                     ])}
+                                    target="_blank"
+                                    href={
+                                      `https://www.youtube.com/watch?v=${hash}` +
+                                      "&t=" +
+                                      getSeconds(start)
+                                    }
                                   >
-                                    {label}
-                                  </span>
-                                  <span class="mabry text-brand-red">
-                                    {start}
-                                  </span>
-                                </a>
-                                <UpvoteButton isUpvoted={isUpvoted} />
-                              </li>
-                            );
-                          })}
+                                    <span
+                                      class={clsx([
+                                        "mabry",
+                                        show === "sone-que-volaba"
+                                          ? "text-show-soneQueVolaba-blue"
+                                          : "text-show-seriaIncreible-purple",
+                                      ])}
+                                    >
+                                      {label}
+                                    </span>
+                                    <span class="mabry text-brand-red">
+                                      {start}
+                                    </span>
+                                  </a>
+                                  <Form action={upvote} class="flex">
+                                    <span class="sr-only">
+                                      {isUpvoted
+                                        ? "Quitar voto de este corte"
+                                        : "Votar este corte para el ranking"}
+                                    </span>
+                                    <input
+                                      type="hidden"
+                                      name="isUpvoted"
+                                      value={isUpvoted ? "true" : "false"}
+                                    />
+                                    <input
+                                      type="hidden"
+                                      name="cutId"
+                                      value={id}
+                                    />
+                                    <input
+                                      type="hidden"
+                                      name="userId"
+                                      value={userId.value.userId}
+                                    />
+                                    <button
+                                      type="submit"
+                                      class={clsx([
+                                        "outline-4",
+                                        isUpvoted
+                                          ? "text-brand-red focus-visible:outline focus-visible:outline-brand-red"
+                                          : "text-brand-redHover hover:text-brand-red focus-visible:outline focus-visible:outline-brand-red",
+                                      ])}
+                                      aria-label={
+                                        isUpvoted
+                                          ? "Quitar voto de este corte"
+                                          : "Votar este corte para el ranking"
+                                      }
+                                      aria-pressed={isUpvoted}
+                                    >
+                                      <HeartIcon
+                                        class={clsx([
+                                          "h-6 w-7",
+                                          isUpvoted
+                                            ? "fill-brand-redHover hover:fill-brand-stone"
+                                            : "fill-brand-stone hover:fill-brand-redHover",
+                                        ])}
+                                      />
+                                    </button>
+                                  </Form>
+                                </li>
+                              );
+                            })}
                         </ul>
                       </li>
                     );
@@ -246,64 +338,6 @@ export default component$(() => {
   );
 });
 
-export const UpvoteButton = component$<{ isUpvoted: boolean }>(
-  ({ isUpvoted }) => {
-    const upvote = useUpvote();
-    const userId = useUserId();
-
-    console.log("upvote", upvote.value);
-
-    return (
-      <Form action={upvote} class="flex">
-        <span class="sr-only">
-          {isUpvoted
-            ? "Quitar voto de este corte"
-            : "Votar este corte para el ranking"}
-        </span>
-        <input type="hidden" name="isUpvoted" value={isUpvoted ? 1 : 0} />
-        <input type="hidden" name="userId" value={userId.value.userId} />
-        <button
-          type="submit"
-          class={clsx([
-            "border-2 border-solid p-0.5 outline-4",
-            isUpvoted
-              ? "border-green-500 text-green-500 hover:bg-green-200 focus-visible:outline focus-visible:outline-green-600"
-              : "border-green-300 text-green-300 hover:border-green-500 hover:bg-green-200 hover:text-green-500 focus-visible:outline focus-visible:outline-green-600",
-          ])}
-          aria-label={
-            isUpvoted
-              ? "Quitar voto de este corte"
-              : "Votar este corte para el ranking"
-          }
-          aria-pressed={isUpvoted}
-        >
-          <svg
-            class="h-4 w-4"
-            viewBox="0 0 16 16"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M8 15V1"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-            <path
-              d="M1 8L8 1L15 8"
-              class="fill-transparent"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </button>
-      </Form>
-    );
-  },
-);
-
 export const head: DocumentHead = {
   title: "Olga TV",
   meta: [
@@ -313,6 +347,26 @@ export const head: DocumentHead = {
     },
   ],
 };
+
+export const HeartIcon = component$<{ class: ClassList | Signal<ClassList> }>(
+  (props) => {
+    return (
+      <svg
+        class={props.class}
+        viewBox="0 0 16 14"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M13.9205 2.06089C13.5784 1.72455 13.1722 1.45775 12.7252 1.27572C12.2782 1.09369 11.799 1 11.3151 1C10.8312 1 10.3521 1.09369 9.90504 1.27572C9.45801 1.45775 9.05185 1.72455 8.70976 2.06089L7.99982 2.75857L7.28988 2.06089C6.5989 1.38184 5.66172 1.00035 4.68453 1.00035C3.70733 1.00035 2.77016 1.38184 2.07917 2.06089C1.38819 2.73994 1 3.66092 1 4.62124C1 5.58157 1.38819 6.50255 2.07917 7.1816L2.78911 7.87928L7.99982 13L13.2105 7.87928L13.9205 7.1816C14.2627 6.84543 14.5342 6.44628 14.7194 6.00697C14.9047 5.56765 15 5.09678 15 4.62124C15 4.14571 14.9047 3.67484 14.7194 3.23552C14.5342 2.79621 14.2627 2.39706 13.9205 2.06089Z"
+          stroke="currentColor"
+          stroke-width="1"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    );
+  },
+);
 
 export const SoneQueVolabaIcon = component$(() => {
   return (
