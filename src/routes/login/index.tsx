@@ -1,23 +1,9 @@
 import { Form, Link, routeAction$, z, zod$ } from "@builder.io/qwik-city";
-import { LuciaError, lucia } from "lucia";
-import { d1 } from "@lucia-auth/adapter-sqlite";
+import { LuciaError } from "lucia";
 import type { D1Database } from "@cloudflare/workers-types";
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import clsx from "clsx";
-
-export const initializeLucia = (db: D1Database) => {
-  const auth = lucia({
-    env: "DEV",
-    adapter: d1(db, {
-      user: "user",
-      key: "user_key",
-      session: "user_session",
-    }),
-  });
-  return auth;
-};
-
-export type Auth = ReturnType<typeof initializeLucia>;
+import { initializeLucia } from "~/utils/session";
 
 export const useLoginUser = routeAction$(
   async ({ username, password }, { platform, redirect, headers, fail }) => {
@@ -73,8 +59,7 @@ export default component$(() => {
             Usuario
           </label>
           <input
-            // eslint-disable-next-line prettier/prettier
-            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
             type="text"
             ref={inputRef}
             id="username"
@@ -107,8 +92,7 @@ export default component$(() => {
             Contraseña
           </label>
           <input
-            // eslint-disable-next-line prettier/prettier
-            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
             type="password"
             id="password"
             name="password"
@@ -127,11 +111,6 @@ export default component$(() => {
             {loginUser.value?.fieldErrors?.password ?? "Olga"}
           </span>
         </p>
-        {/* {loginUser.value?.failed && loginUser.value.message ? (
-          <p class="mabry text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1">
-            {loginUser.value.message}
-          </p>
-        ) : null} */}
         <button
           type="submit"
           class="mabry w-full border-2 border-brand-red bg-brand-red px-4 py-2 text-2xl text-brand-stone outline-4 focus-visible:outline focus-visible:outline-brand-blue md:hover:bg-brand-stone md:hover:text-brand-red"

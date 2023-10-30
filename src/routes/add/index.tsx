@@ -154,8 +154,7 @@ export default component$(() => {
             Dia
           </label>
           <input
-            // eslint-disable-next-line prettier/prettier
-            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
             type="number"
             ref={inputRef}
             id="day"
@@ -167,8 +166,7 @@ export default component$(() => {
             Mes
           </label>
           <input
-            // eslint-disable-next-line prettier/prettier
-            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red"
+            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
             type="number"
             id="month"
             name="month"
