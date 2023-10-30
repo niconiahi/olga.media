@@ -135,7 +135,25 @@ export const useUpvote = routeAction$(
     const url = new URL(request.url);
 
     if (isUpvoted === "true") {
-      return isUpvoted;
+      const data = await (
+        await fetch(url.origin + "/upvote/remove/[id]", {
+          method: "DELETE",
+          body: JSON.stringify({ userId, cutId }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+      ).json();
+      const result = upvoteSchema.safeParse(data);
+      if (!result.success) {
+        throw error(
+          404,
+          `the expected structure of the removed "upvote" is incorrect`,
+        );
+      }
+      const upvote = result.data;
+
+      return upvote;
     } else {
       const data = await (
         await fetch(url.origin + "/upvote/create/[id]", {
@@ -236,12 +254,14 @@ export default component$(() => {
                         ) : null}
                         <ul>
                           {cuts
-                            .map((cut) => ({
-                              ...cut,
-                              isUpvoted: upvotes.value.some(
-                                ({ cut_id }) => cut_id === cut.id,
-                              ),
-                            }))
+                            .map((cut) => {
+                              return {
+                                ...cut,
+                                isUpvoted: upvotes.value.some(
+                                  ({ cut_id }) => cut_id === cut.id,
+                                ),
+                              };
+                            })
                             .map(({ label, start, hash, id, isUpvoted }) => {
                               return (
                                 <li
@@ -299,12 +319,7 @@ export default component$(() => {
                                     />
                                     <button
                                       type="submit"
-                                      class={clsx([
-                                        "outline-4",
-                                        isUpvoted
-                                          ? "text-brand-red focus-visible:outline focus-visible:outline-brand-red"
-                                          : "text-brand-redHover hover:text-brand-red focus-visible:outline focus-visible:outline-brand-red",
-                                      ])}
+                                      class="outline-4 focus-visible:outline focus-visible:outline-brand-red"
                                       aria-label={
                                         isUpvoted
                                           ? "Quitar voto de este corte"
@@ -316,8 +331,8 @@ export default component$(() => {
                                         class={clsx([
                                           "h-6 w-7",
                                           isUpvoted
-                                            ? "fill-brand-redHover hover:fill-brand-stone"
-                                            : "fill-brand-stone hover:fill-brand-redHover",
+                                            ? "fill-brand-redHover text-brand-red"
+                                            : "fill-brand-stone text-brand-redHover",
                                         ])}
                                       />
                                     </button>
