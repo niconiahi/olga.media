@@ -22,6 +22,12 @@ export interface D1Migrations {
   name: string | null;
 }
 
+export interface Upvote {
+  cut_id: number;
+  id: Generated<number>;
+  user_id: string;
+}
+
 export interface User {
   id: string;
   username: string;
@@ -41,20 +47,21 @@ export interface UserSession {
 }
 
 export interface Video {
-  createdAt: Generated<string | null>;
+  created_at: Generated<string | null>;
   day: number;
   hash: string;
   id: Generated<number>;
   month: number;
   show: string;
   title: string;
-  updatedAt: string | null;
+  updated_at: string | null;
 }
 
 export interface DB {
   _cf_KV: _CfKV;
   cut: Cut;
   d1_migrations: D1Migrations;
+  upvote: Upvote;
   user: User;
   user_key: UserKey;
   user_session: UserSession;

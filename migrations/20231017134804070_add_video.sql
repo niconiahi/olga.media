@@ -5,6 +5,6 @@ CREATE TABLE "video" (
   "show" TEXT NOT NULL,
   "day" INTEGER NOT NULL,
   "month" INTEGER NOT NULL,
-  "createdAt" DATETIME DEFAULT CURRENT_TIMESTAMP, 
-  "updatedAt" DATETIME
+  "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP, 
+  "updated_at" DATETIME
 );

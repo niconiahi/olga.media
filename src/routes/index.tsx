@@ -8,7 +8,8 @@ import {
   z,
 } from "@builder.io/qwik-city";
 import clsx from "clsx";
-import { cutsSchema } from "~/routes/cuts/get/all";
+import { cutsSchema } from "~/routes/cut/get/all";
+import { getUser } from "~/utils/session";
 
 // the "start" comes in the form of "dd:dd:dd"
 function getSeconds(start: string) {
@@ -33,7 +34,7 @@ export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
   const query = searchParams.get("query");
-  const raws = await (await fetch(url.origin + "/cuts/get/all")).json();
+  const raws = await (await fetch(url.origin + "/cut/get/all")).json();
   const result = cutsSchema.safeParse(raws);
   if (!result.success) {
     throw new Error(result.error.toString());
@@ -93,12 +94,32 @@ export const useCuts = routeLoader$(async ({ request }) => {
   return { cutsByDay, query };
 });
 
+export const useUserId = routeLoader$(async (requestEvent) => {
+  const user = await getUser(requestEvent);
+
+  return { userId: user?.userId };
+});
+
 export const useSearch = routeAction$(
   async ({ query }, { redirect }) => {
     throw redirect(302, query === "" ? "/" : `/?query=${query}`);
   },
   zod$({
     query: z.string(),
+  }),
+);
+
+export const useUpvote = routeAction$(
+  async ({ isUpdated, userId }, { redirect }) => {
+    if (!userId) {
+      throw redirect(302, `/login`);
+    }
+
+    return isUpdated;
+  },
+  zod$({
+    isUpdated: z.coerce.boolean(),
+    userId: z.union([z.coerce.string(), z.undefined()]),
   }),
 );
 
@@ -120,7 +141,6 @@ export default component$(() => {
             </label>
             <input
               value={cuts.value.query}
-              // eslint-disable-next-line prettier/prettier
               class="mabry w-full px-1 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-blue md:hover:bg-brand-redHover"
               type="text"
               id="query"
@@ -173,38 +193,46 @@ export default component$(() => {
                           <SoneQueVolabaIcon />
                         ) : null}
                         <ul>
-                          {cuts.map(({ label, start, hash }) => (
-                            <li key={`cut-${day}-${show}-${hash}`} class="b">
-                              <a
-                                class={clsx([
-                                  "flex w-full justify-between space-x-2 p-0.5 font-medium md:hover:cursor-pointer",
-                                  show === "sone-que-volaba"
-                                    ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
-                                    : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
-                                ])}
-                                target="_blank"
-                                href={
-                                  `https://www.youtube.com/watch?v=${hash}` +
-                                  "&t=" +
-                                  getSeconds(start)
-                                }
+                          {cuts.map(({ label, start, hash }) => {
+                            const isUpvoted = false;
+
+                            return (
+                              <li
+                                key={`cut-${day}-${show}-${hash}`}
+                                class="flex items-center space-x-2 py-0.5"
                               >
-                                <span
+                                <a
                                   class={clsx([
-                                    "mabry",
+                                    "flex w-full items-center justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
                                     show === "sone-que-volaba"
-                                      ? "text-show-soneQueVolaba-blue"
-                                      : "text-show-seriaIncreible-purple",
+                                      ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
+                                      : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
                                   ])}
+                                  target="_blank"
+                                  href={
+                                    `https://www.youtube.com/watch?v=${hash}` +
+                                    "&t=" +
+                                    getSeconds(start)
+                                  }
                                 >
-                                  {label}
-                                </span>
-                                <span class="mabry text-brand-red">
-                                  {start}
-                                </span>
-                              </a>
-                            </li>
-                          ))}
+                                  <span
+                                    class={clsx([
+                                      "mabry",
+                                      show === "sone-que-volaba"
+                                        ? "text-show-soneQueVolaba-blue"
+                                        : "text-show-seriaIncreible-purple",
+                                    ])}
+                                  >
+                                    {label}
+                                  </span>
+                                  <span class="mabry text-brand-red">
+                                    {start}
+                                  </span>
+                                </a>
+                                <UpvoteButton isUpvoted={isUpvoted} />
+                              </li>
+                            );
+                          })}
                         </ul>
                       </li>
                     );
@@ -217,6 +245,64 @@ export default component$(() => {
     </>
   );
 });
+
+export const UpvoteButton = component$<{ isUpvoted: boolean }>(
+  ({ isUpvoted }) => {
+    const upvote = useUpvote();
+    const userId = useUserId();
+
+    console.log("upvote", upvote.value);
+
+    return (
+      <Form action={upvote} class="flex">
+        <span class="sr-only">
+          {isUpvoted
+            ? "Quitar voto de este corte"
+            : "Votar este corte para el ranking"}
+        </span>
+        <input type="hidden" name="isUpvoted" value={isUpvoted ? 1 : 0} />
+        <input type="hidden" name="userId" value={userId.value.userId} />
+        <button
+          type="submit"
+          class={clsx([
+            "border-2 border-solid p-0.5 outline-4",
+            isUpvoted
+              ? "border-green-500 text-green-500 hover:bg-green-200 focus-visible:outline focus-visible:outline-green-600"
+              : "border-green-300 text-green-300 hover:border-green-500 hover:bg-green-200 hover:text-green-500 focus-visible:outline focus-visible:outline-green-600",
+          ])}
+          aria-label={
+            isUpvoted
+              ? "Quitar voto de este corte"
+              : "Votar este corte para el ranking"
+          }
+          aria-pressed={isUpvoted}
+        >
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 16 16"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 15V1"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M1 8L8 1L15 8"
+              class="fill-transparent"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </Form>
+    );
+  },
+);
 
 export const head: DocumentHead = {
   title: "Olga TV",
