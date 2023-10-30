@@ -18,11 +18,7 @@ export const cutsSchema = z.array(
 
 export type Cuts = z.infer<typeof cutsSchema>;
 
-export const onGet: RequestHandler = async ({
-  json,
-  platform,
-  cacheControl,
-}) => {
+export const onGet: RequestHandler = async ({ json, platform }) => {
   const env = platform.env as { DB: D1Database };
   const db = new Kysely<DB>({
     dialect: new D1Dialect({ database: env.DB }),
@@ -41,9 +37,5 @@ export const onGet: RequestHandler = async ({
     ])
     .execute();
 
-  cacheControl({
-    // TODO: set real value, this is for testing purposes
-    staleWhileRevalidate: 60,
-  });
   json(200, cuts);
 };
