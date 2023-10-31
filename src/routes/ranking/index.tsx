@@ -51,15 +51,15 @@ export default component$(() => {
               {show === "seria-increible" ? <SeriaIncreibleIcon /> : null}
               {show === "sone-que-volaba" ? <SoneQueVolabaIcon /> : null}
               <ul>
-                {cuts.map(({ label, start, hash, upvotes }) => {
+                {cuts.map(({ label, start, hash }, index) => {
                   return (
                     <li
                       key={`cut-${show}-${hash}`}
-                      class="flex items-center py-0.5"
+                      class="flex items-start py-0.5"
                     >
                       <a
                         class={clsx([
-                          "mr-2 flex w-full items-center justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
+                          "mr-2 flex w-full items-start justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
                           show === "sone-que-volaba"
                             ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
                             : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
@@ -83,8 +83,8 @@ export default component$(() => {
                         </span>
                         <span class="mabry text-brand-red">{start}</span>
                       </a>
-                      <div class="flex w-8 items-center justify-end">
-                        <span class="mabry text-lg text-brand-blue">
+                      <div class="flex w-[4.75rem] items-center justify-end bg-brand-blueHover">
+                        <span class="mabry px-0.5 text-brand-blue">
                           {upvotes}
                           <span class="sr-only">votos</span>
                         </span>
