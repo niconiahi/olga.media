@@ -247,11 +247,11 @@ export default component$(() => {
                               return (
                                 <li
                                   key={`cut-${day}-${show}-${hash}`}
-                                  class="flex items-center space-x-2 py-0.5"
+                                  class="flex items-start space-x-2 py-0.5"
                                 >
                                   <a
                                     class={clsx([
-                                      "flex w-full items-center justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
+                                      "flex w-full items-start justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
                                       show === "sone-que-volaba"
                                         ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
                                         : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
