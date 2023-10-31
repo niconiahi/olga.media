@@ -71,12 +71,6 @@ export const useCuts = routeLoader$(async ({ request }) => {
   return { cutsByDay, query };
 });
 
-export const useUserId = routeLoader$(async (requestEvent) => {
-  const user = await getUser(requestEvent);
-
-  return { userId: user?.userId };
-});
-
 export const useUpvotes = routeLoader$(async (requestEvent) => {
   const { request } = requestEvent;
   const url = new URL(request.url);
@@ -160,6 +154,12 @@ export const useUpvote = routeAction$(
     userId: z.union([z.coerce.string(), z.undefined()]),
   }),
 );
+
+export const useUserId = routeLoader$(async (requestEvent) => {
+  const user = await getUser(requestEvent);
+
+  return { userId: user?.userId };
+});
 
 export default component$(() => {
   const cuts = useCuts();

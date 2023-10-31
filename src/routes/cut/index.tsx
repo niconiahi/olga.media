@@ -15,6 +15,12 @@ import { getUser } from "~/utils/session";
 import { upvotesSchema, type Upvotes } from "~/routes/upvote/get/all";
 import { upvoteSchema } from "~/routes/upvote/create/[id]";
 
+export const useUserId = routeLoader$(async (requestEvent) => {
+  const user = await getUser(requestEvent);
+
+  return { userId: user?.userId };
+});
+
 export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
@@ -69,12 +75,6 @@ export const useCuts = routeLoader$(async ({ request }) => {
   );
 
   return { cutsByDay, query };
-});
-
-export const useUserId = routeLoader$(async (requestEvent) => {
-  const user = await getUser(requestEvent);
-
-  return { userId: user?.userId };
 });
 
 export const useUpvotes = routeLoader$(async (requestEvent) => {

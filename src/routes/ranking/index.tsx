@@ -29,7 +29,7 @@ export default component$(() => {
 
   return (
     <section class="flex h-full flex-1 flex-col items-start justify-center space-y-2">
-      <h2 class="bebas text-5xl uppercase leading-none text-brand-red">
+      <h2 class="bebas text-3xl uppercase leading-none text-brand-red">
         Top 20
       </h2>
       <ul class="grow space-y-2">
@@ -83,8 +83,8 @@ export default component$(() => {
                         </span>
                         <span class="mabry text-brand-red">{start}</span>
                       </a>
-                      <div class="flex w-[4.75rem] items-center justify-end border-2 border-solid border-brand-red bg-brand-blueHover">
-                        <span class="mabry px-1 leading-5 text-brand-red">
+                      <div class="flex w-[4.75rem] items-center justify-end bg-brand-blueHover">
+                        <span class="mabry px-1 text-brand-blue">
                           {upvotes}
                           <span class="sr-only">votos</span>
                         </span>

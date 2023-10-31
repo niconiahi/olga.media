@@ -24,7 +24,7 @@ export const onGet: RequestHandler = async ({ json, platform }) => {
   const cuts = await db
     .selectFrom("cut")
     .innerJoin("video", "video.id", "cut.video_id")
-    .leftJoin("upvote", "upvote.id", "cut.id")
+    .innerJoin("upvote", "upvote.cut_id", "cut.id")
     .select([
       "video.hash",
       "video.show",

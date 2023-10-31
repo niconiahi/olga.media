@@ -1,7 +1,35 @@
 import type { ClassList, Signal } from "@builder.io/qwik";
 import { component$, Slot, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import { Link, useLocation } from "@builder.io/qwik-city";
+import {
+  Form,
+  Link,
+  routeAction$,
+  routeLoader$,
+  useLocation,
+} from "@builder.io/qwik-city";
+import type { D1Database } from "@cloudflare/workers-types";
 import clsx from "clsx";
+import { getUser, initializeLucia } from "~/utils/session";
+
+export const useUserId = routeLoader$(async (requestEvent) => {
+  const user = await getUser(requestEvent);
+
+  return { userId: user?.userId };
+});
+
+export const useLogout = routeAction$(async (_, requestEvent) => {
+  const { platform, error, headers } = requestEvent;
+  const env = platform.env as { DB: D1Database };
+  const auth = initializeLucia(env.DB);
+  const authRequest = auth.handleRequest(requestEvent);
+  const session = await authRequest.validate();
+  if (!session) {
+    throw error(401, "Unauthorized");
+  }
+  await auth.invalidateSession(session.sessionId);
+  const sessionCookie = auth.createSessionCookie(null);
+  headers.set("Set-Cookie", sessionCookie.serialize());
+});
 
 export default component$(() => {
   const location = useLocation();
@@ -9,6 +37,8 @@ export default component$(() => {
   const rankingRef = useSignal<HTMLAnchorElement>();
   const loginRef = useSignal<HTMLAnchorElement>();
   const cutsRef = useSignal<HTMLAnchorElement>();
+  const logout = useLogout();
+  const userId = useUserId();
 
   useVisibleTask$(({ track }) => {
     track(() => location.url.pathname);
@@ -62,19 +92,17 @@ export default component$(() => {
       >
         <Link
           href="/"
-          // eslint-disable-next-line prettier/prettier
           ref={logoRef}
           tabIndex={location.url.pathname === "/" ? -1 : 0}
           class={clsx([
             "pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
             location.url.pathname === "/" &&
-              // eslint-disable-next-line prettier/prettier
-              "md:-translate-x-0.5 md:-translate-y-1 md:shadow-brandBlue md:transition-all md:duration-100 md:border-brand-red",
+              "md:-translate-x-0.5 md:-translate-y-1 md:border-brand-red md:shadow-brandBlue md:transition-all md:duration-100",
           ])}
         >
           <OlgaIcon class="h-9" />
         </Link>
-        <nav class="hidden w-max  md:block">
+        <nav class="hidden w-max md:block">
           <ul class="flex flex-row items-center space-x-2">
             <li
               class={clsx("flex", [
@@ -83,8 +111,11 @@ export default component$(() => {
               ])}
             >
               <Link
-                // eslint-disable-next-line prettier/prettier
-                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5 bg-brand-stone", location.url.pathname === '/cuts/' && 'border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100'])}
+                class={clsx([
+                  "mabry pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:py-2.5",
+                  location.url.pathname === "/cuts/" &&
+                    "border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100",
+                ])}
                 ref={cutsRef}
                 tabIndex={location.url.pathname === "/cuts/" ? -1 : 0}
                 href="/cuts"
@@ -99,8 +130,11 @@ export default component$(() => {
               ])}
             >
               <Link
-                // eslint-disable-next-line prettier/prettier
-                class={clsx(["mabry px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue pointer-events-auto md:py-2.5 bg-brand-stone", location.url.pathname === '/ranking/' && 'border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100'])}
+                class={clsx([
+                  "mabry pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:py-2.5",
+                  location.url.pathname === "/ranking/" &&
+                    "border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100",
+                ])}
                 tabIndex={location.url.pathname === "/ranking/" ? -1 : 0}
                 ref={rankingRef}
                 href="/ranking"
@@ -108,139 +142,93 @@ export default component$(() => {
                 Ranking
               </Link>
             </li>
-            <li
-              class={clsx("flex", [
-                ["/login/", "/join/"].some(
-                  (pathname) => pathname === location.url.pathname,
-                ) && "-translate-x-0.5 -translate-y-1",
-              ])}
-            >
-              <Link
-                href="/login"
-                ref={loginRef}
-                tabIndex={
+            {userId.value.userId ? (
+              <li class="flex bg-red-500">
+                <Form action={logout}>
+                  <button
+                    aria-label="Logout"
+                    type="submit"
+                    class="pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+                  >
+                    <span class="sr-only">Logout</span>
+                    <LogoutIcon class="h-8 text-brand-blue" />
+                  </button>
+                </Form>
+              </li>
+            ) : (
+              <li
+                class={clsx("flex", [
                   ["/login/", "/join/"].some(
                     (pathname) => pathname === location.url.pathname,
-                  )
-                    ? -1
-                    : 0
-                }
-                // eslint-disable-next-line prettier/prettier
-                class={clsx(["border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red pointer-events-auto"], ["/login/", "/join/"].some(
-                    (pathname) => pathname === location.url.pathname,
-                  ) &&
-                    // eslint-disable-next-line prettier/prettier
-                    "border-brand-red shadow-brandBlue transition-shadow duration-100",
-                )}
+                  ) && "-translate-x-0.5 -translate-y-1",
+                ])}
               >
-                <svg
-                  class={clsx([
-                    "h-8 text-brand-blue",
+                <Link
+                  href="/login"
+                  ref={loginRef}
+                  tabIndex={
                     ["/login/", "/join/"].some(
                       (pathname) => pathname === location.url.pathname,
-                    ) && "text-brand-red",
-                  ])}
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+                    )
+                      ? -1
+                      : 0
+                  }
+                  class={clsx(
+                    [
+                      "pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
+                    ],
+                    ["/login/", "/join/"].some(
+                      (pathname) => pathname === location.url.pathname,
+                    ) &&
+                      "border-brand-red shadow-brandBlue transition-shadow duration-100",
+                  )}
                 >
-                  <path
-                    d="M13 1H17C17.5304 1 18.0391 1.21071 18.4142 1.58579C18.7893 1.96086 19 2.46957 19 3V17C19 17.5304 18.7893 18.0391 18.4142 18.4142C18.0391 18.7893 17.5304 19 17 19H13"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                  <LoginIcon
+                    class={clsx([
+                      "h-8 text-brand-blue",
+                      ["/login/", "/join/"].some(
+                        (pathname) => pathname === location.url.pathname,
+                      ) && "text-brand-red",
+                    ])}
                   />
-                  <path
-                    d="M8 15L13 10L8 5"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M13 10H1"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </Link>
-            </li>
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
         <nav class="pointer-events-auto md:hidden">
           <ul class="flex items-center space-x-2">
-            <li class="flex">
-              <Link
-                href="/login"
-                // eslint-disable-next-line prettier/prettier
-                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
-              >
-                <svg
-                  class="h-8 text-brand-blue"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+            {userId.value.userId ? (
+              <li class="flex">
+                <Form action={logout}>
+                  <button
+                    aria-label="Logout"
+                    type="submit"
+                    class="pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+                  >
+                    <span class="sr-only">Logout</span>
+                    <LogoutIcon class="h-8 text-brand-blue" />
+                  </button>
+                </Form>
+              </li>
+            ) : (
+              <li class="flex">
+                <Link
+                  href="/login"
+                  class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden md:hover:bg-brand-blueHover"
                 >
-                  <path
-                    d="M13 1H17C17.5304 1 18.0391 1.21071 18.4142 1.58579C18.7893 1.96086 19 2.46957 19 3V17C19 17.5304 18.7893 18.0391 18.4142 18.4142C18.0391 18.7893 17.5304 19 17 19H13"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M8 15L13 10L8 5"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M13 10H1"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </Link>
-            </li>
+                  <span class="sr-only">Login</span>
+                  <LoginIcon class="h-8 text-brand-blue" />
+                </Link>
+              </li>
+            )}
             <li class="flex">
               <Link
                 href="/navigate"
-                // eslint-disable-next-line prettier/prettier
-                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 md:hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:hidden"
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden md:hover:bg-brand-blueHover"
               >
-                <svg
-                  class="h-8 text-brand-blue"
-                  viewBox="0 0 14 14"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1 7H13"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="square"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M1 1H13"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="square"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M1 13H13"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="square"
-                    stroke-linejoin="round"
-                  />
-                </svg>
+                <span class="sr-only">Menu</span>
+                <HamburgerIcon class="h-8 text-brand-blue" />
               </Link>
             </li>
           </ul>
@@ -252,6 +240,112 @@ export default component$(() => {
     </>
   );
 });
+
+export const HamburgerIcon = component$<{
+  class: ClassList | Signal<ClassList>;
+}>((props) => {
+  return (
+    <svg
+      class={props.class}
+      aria-hidden="true"
+      viewBox="0 0 14 14"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1 7H13"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M1 1H13"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M1 13H13"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="square"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+});
+
+export const LogoutIcon = component$<{
+  class: ClassList | Signal<ClassList>;
+}>((props) => {
+  return (
+    <svg
+      class={props.class}
+      aria-hidden="true"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M5.66667 15H2.55556C2.143 15 1.74733 14.8361 1.45561 14.5444C1.16389 14.2527 1 13.857 1 13.4444V2.55556C1 2.143 1.16389 1.74733 1.45561 1.45561C1.74733 1.16389 2.143 1 2.55556 1H5.66667"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M11.1111 11.8889L15 8L11.1111 4.11111"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M15 8H5.66663"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+});
+
+export const LoginIcon = component$<{ class: ClassList | Signal<ClassList> }>(
+  (props) => {
+    return (
+      <svg
+        class={clsx(["fill-none", props.class])}
+        viewBox="0 0 16 16"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M10.3334 1H13.4445C13.857 1 14.2527 1.16389 14.5444 1.45561C14.8362 1.74733 15 2.143 15 2.55556V13.4444C15 13.857 14.8362 14.2527 14.5444 14.5444C14.2527 14.8361 13.857 15 13.4445 15H10.3334"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M6.44446 11.8889L10.3333 8L6.44446 4.11111"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M10.3333 8H1"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    );
+  },
+);
 
 export const OlgaIcon = component$<{ class: ClassList | Signal<ClassList> }>(
   (props) => {
