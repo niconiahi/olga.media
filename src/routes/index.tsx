@@ -15,25 +15,6 @@ import { getUser } from "~/utils/session";
 import { upvotesSchema, type Upvotes } from "~/routes/upvote/get/all";
 import { upvoteSchema } from "~/routes/upvote/create/[id]";
 
-// the "start" comes in the form of "dd:dd:dd"
-function getSeconds(start: string) {
-  const parts = start.split(":").map(Number);
-
-  let seconds = 0;
-  if (parts.length === 3) {
-    seconds += parts[0] * 3600;
-    seconds += parts[1] * 60;
-    seconds += parts[2];
-  } else if (parts.length === 2) {
-    seconds += parts[0] * 60;
-    seconds += parts[1];
-  } else if (parts.length === 1) {
-    seconds = parts[0];
-  }
-
-  return seconds;
-}
-
 export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
@@ -67,7 +48,7 @@ export const useCuts = routeLoader$(async ({ request }) => {
           : true;
       })
       .reduce<{
-        [id: string]: { [show: string]: Cuts };
+        [day: string]: { [show: string]: Cuts };
       }>((prevDays, cut) => {
         const day = `${cut.day}/${cut.month}`;
         const { show } = cut;
@@ -480,3 +461,22 @@ export const SeriaIncreibleIcon = component$(() => {
     </svg>
   );
 });
+
+// the "start" comes in the form of "dd:dd:dd"
+function getSeconds(start: string) {
+  const parts = start.split(":").map(Number);
+
+  let seconds = 0;
+  if (parts.length === 3) {
+    seconds += parts[0] * 3600;
+    seconds += parts[1] * 60;
+    seconds += parts[2];
+  } else if (parts.length === 2) {
+    seconds += parts[0] * 60;
+    seconds += parts[1];
+  } else if (parts.length === 1) {
+    seconds = parts[0];
+  }
+
+  return seconds;
+}
