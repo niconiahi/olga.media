@@ -8,9 +8,7 @@ export const cutsSchema = z.array(
   z.object({
     start: z.string(),
     label: z.string(),
-    day: z.number(),
     hash: z.string(),
-    month: z.number(),
     show: z.string(),
     upvotes: z.number(),
   }),
@@ -28,10 +26,8 @@ export const onGet: RequestHandler = async ({ json, platform }) => {
     .innerJoin("video", "video.id", "cut.video_id")
     .leftJoin("upvote", "upvote.id", "cut.id")
     .select([
-      "video.day",
       "video.hash",
       "video.show",
-      "video.month",
       "cut.label",
       "cut.start",
       sql<number>`COUNT(upvote.id)`.as("upvotes"),

@@ -51,7 +51,7 @@ export default component$(() => {
               {show === "seria-increible" ? <SeriaIncreibleIcon /> : null}
               {show === "sone-que-volaba" ? <SoneQueVolabaIcon /> : null}
               <ul>
-                {cuts.map(({ label, start, hash }, index) => {
+                {cuts.map(({ label, start, hash, upvotes }) => {
                   return (
                     <li
                       key={`cut-${show}-${hash}`}
