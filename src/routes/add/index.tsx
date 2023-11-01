@@ -115,17 +115,34 @@ export const useAddCuts = routeAction$(
     const cuts = (
       await Promise.all(addedVideos.map(({ hash, id }) => getCuts(hash, id)))
     ).flat();
+    const chunks = cuts.reduce<Cuts[]>((acc, cut, index) => {
+      const SIZE = 20;
+      const chunkIndex = Math.floor(index / SIZE);
 
-    await db
-      .insertInto("cut")
-      .values(
-        cuts.map(({ label, start, videoId }) => ({
-          label,
-          start,
-          video_id: videoId,
-        })),
-      )
-      .execute();
+      if (!acc[chunkIndex]) {
+        acc[chunkIndex] = [];
+      }
+
+      acc[chunkIndex].push(cut);
+
+      return acc;
+    }, []);
+
+    Promise.all(
+      chunks.map(
+        async (chunk) =>
+          await db
+            .insertInto("cut")
+            .values(
+              chunk.map(({ label, start, videoId }) => ({
+                label,
+                start,
+                video_id: videoId,
+              })),
+            )
+            .execute(),
+      ),
+    );
 
     status(201);
     return addedVideos;
