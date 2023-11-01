@@ -72,7 +72,7 @@ export const useCuts = routeLoader$(async ({ request }) => {
       return Number(day) + Number(month);
     }
 
-    return sum(a) + sum(b);
+    return sum(b) - sum(a);
   });
 
   return {
