@@ -95,7 +95,7 @@ export default component$(() => {
           ref={logoRef}
           tabIndex={location.url.pathname === "/" ? -1 : 0}
           class={clsx([
-            "pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-transparent p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
+            "pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
             location.url.pathname === "/" &&
               "md:-translate-x-0.5 md:-translate-y-1 md:border-brand-red md:shadow-brandBlue md:transition-all md:duration-100",
           ])}
@@ -112,7 +112,7 @@ export default component$(() => {
             >
               <Link
                 class={clsx([
-                  "mabry pointer-events-auto border-2 border-solid border-brand-blue bg-transparent px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:py-2.5",
+                  "mabry pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:py-2.5",
                   location.url.pathname === "/cuts/" &&
                     "border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100",
                 ])}
@@ -131,7 +131,7 @@ export default component$(() => {
             >
               <Link
                 class={clsx([
-                  "mabry pointer-events-auto border-2 border-solid border-brand-blue bg-transparent px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:py-2.5",
+                  "mabry pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone px-4 py-[15px] text-lg text-brand-blue outline-4 outline-offset-0 hover:bg-brand-blueHover focus-visible:outline focus-visible:outline-brand-red md:py-2.5",
                   location.url.pathname === "/ranking/" &&
                     "border-brand-red text-brand-red shadow-brandBlue transition-shadow duration-100",
                 ])}
@@ -148,7 +148,7 @@ export default component$(() => {
                   <button
                     aria-label="Logout"
                     type="submit"
-                    class="pointer-events-auto border-2 border-solid border-brand-blue bg-transparent p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+                    class="pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
                   >
                     <span class="sr-only">Logout</span>
                     <LogoutIcon class="h-8 text-brand-blue" />
@@ -175,7 +175,7 @@ export default component$(() => {
                   }
                   class={clsx(
                     [
-                      "pointer-events-auto border-2 border-solid border-brand-blue bg-transparent p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
+                      "pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
                     ],
                     ["/login/", "/join/"].some(
                       (pathname) => pathname === location.url.pathname,
@@ -204,7 +204,7 @@ export default component$(() => {
                   <button
                     aria-label="Logout"
                     type="submit"
-                    class="pointer-events-auto border-2 border-solid border-brand-blue bg-transparent p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+                    class="pointer-events-auto border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
                   >
                     <span class="sr-only">Logout</span>
                     <LogoutIcon class="h-8 text-brand-blue" />
@@ -215,7 +215,7 @@ export default component$(() => {
               <li class="flex">
                 <Link
                   href="/login"
-                  class="border-2 border-solid border-brand-blue bg-transparent p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden md:hover:bg-brand-blueHover"
+                  class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden md:hover:bg-brand-blueHover"
                 >
                   <span class="sr-only">Login</span>
                   <LoginIcon class="h-8 text-brand-blue" />
@@ -225,7 +225,7 @@ export default component$(() => {
             <li class="flex">
               <Link
                 href="/navigate"
-                class="border-2 border-solid border-brand-blue bg-transparent p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden md:hover:bg-brand-blueHover"
+                class="border-2 border-solid border-brand-blue bg-brand-stone p-2 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hidden md:hover:bg-brand-blueHover"
               >
                 <span class="sr-only">Menu</span>
                 <HamburgerIcon class="h-8 text-brand-blue" />
