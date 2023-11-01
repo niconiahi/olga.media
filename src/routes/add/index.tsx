@@ -77,7 +77,7 @@ export const useAddCuts = routeAction$(
 
     const result = videosSchema.safeParse(raws);
     if (!result.success) {
-      throw new Error(result.error.toString());
+      return fail(400, { error: result.error.toString() });
     }
 
     const nextVideos = result.data;
@@ -117,44 +117,63 @@ export const useAddCuts = routeAction$(
       await Promise.all(addedVideos.map(({ hash, id }) => getCuts(hash, id)))
     ).flat();
     console.log("cuts:", cuts);
-    const chunks = cuts.reduce<Cuts[]>((acc, cut, index) => {
-      const SIZE = 10;
-      const chunkIndex = Math.floor(index / SIZE);
+    // const chunks = cuts.reduce<Cuts[]>((acc, cut, index) => {
+    //   const SIZE = 20;
+    //   const chunkIndex = Math.floor(index / SIZE);
 
-      if (!acc[chunkIndex]) {
-        acc[chunkIndex] = [];
-      }
+    //   if (!acc[chunkIndex]) {
+    //     acc[chunkIndex] = [];
+    //   }
 
-      acc[chunkIndex].push(cut);
+    //   acc[chunkIndex].push(cut);
 
-      return acc;
-    }, []);
-    console.log("chunks ~ chunks:", chunks);
+    //   return acc;
+    // }, []);
+    // console.log("chunks ~ chunks:", chunks);
+    // cuts.slice(0, 20);
 
-    Promise.all(
-      chunks.map(
-        async (chunk) =>
-          await db
-            .insertInto("cut")
-            .values(
-              chunk.map(({ label, start, videoId }) => ({
-                label,
-                start,
-                video_id: videoId,
-              })),
-            )
-            .execute(),
-      ),
-    );
+    // await Promise.all(
+    //   chunks.map((chunk) =>
+    //     db
+    //       .insertInto("cut")
+    //       .values(
+    //         chunk.map(({ label, start, videoId }) => ({
+    //           label,
+    //           start,
+    //           video_id: videoId,
+    //         })),
+    //       )
+    //       .execute(),
+    //   ),
+    // );
+
+    await db
+      .insertInto("cut")
+      .values(
+        cuts.slice(0, 20).map(({ label, start, videoId }) => ({
+          label,
+          start,
+          video_id: videoId,
+        })),
+      )
+      .execute();
 
     status(201);
-    return addedVideos;
+    return { success: true, addedVideos };
   },
   zod$({
     day: z.coerce.number(),
     month: z.coerce.number(),
   }),
 );
+
+export const useAddUser = routeAction$(async () => {
+  // This will only run on the server when the user submits the form (or when the action is called programmatically)
+  return {
+    success: true,
+    userID: 1,
+  };
+});
 
 export default component$(() => {
   const inputRef = useSignal<HTMLInputElement>();
@@ -198,13 +217,18 @@ export default component$(() => {
         >
           Agregar
         </button>
-        {addCuts.value && addCuts.value.length > 0 ? (
+        {/* @ts-expect-error asdfsdf */}
+        {addCuts.value?.addedVideos && addCuts.value.addedVideos.length > 0 ? (
           <ul>
-            {addCuts.value.map(({ title }) => (
+            {/* @ts-expect-error asdfsdf */}
+            {addCuts.value.addedVideos.map(({ title }) => (
               <li key={`video_${title}`}>{title}</li>
             ))}
           </ul>
         ) : null}
+        {/* {addCuts.value?.chunks && addCuts.value.chunks > 0 ? (
+          <textarea value={JSON.stringify(addCuts.value.chunks, null, 2)} />
+        ) : null} */}
       </Form>
     </section>
   );
