@@ -112,51 +112,25 @@ export const useAddCuts = routeAction$(
       .select(["title", "id", "hash"])
       .where((eb) => eb.or(videos.map(({ hash }) => eb("hash", "=", hash))))
       .execute();
-    console.log("addedVideos:", addedVideos);
     const cuts = (
       await Promise.all(addedVideos.map(({ hash, id }) => getCuts(hash, id)))
     ).flat();
-    console.log("cuts:", cuts);
-    // const chunks = cuts.reduce<Cuts[]>((acc, cut, index) => {
-    //   const SIZE = 20;
-    //   const chunkIndex = Math.floor(index / SIZE);
 
-    //   if (!acc[chunkIndex]) {
-    //     acc[chunkIndex] = [];
-    //   }
+    const CHUNK_SIZE = 20;
+    for (let i = 0; i < cuts.length; i += CHUNK_SIZE) {
+      const chunk = cuts.slice(i, i + CHUNK_SIZE);
 
-    //   acc[chunkIndex].push(cut);
-
-    //   return acc;
-    // }, []);
-    // console.log("chunks ~ chunks:", chunks);
-    // cuts.slice(0, 20);
-
-    // await Promise.all(
-    //   chunks.map((chunk) =>
-    //     db
-    //       .insertInto("cut")
-    //       .values(
-    //         chunk.map(({ label, start, videoId }) => ({
-    //           label,
-    //           start,
-    //           video_id: videoId,
-    //         })),
-    //       )
-    //       .execute(),
-    //   ),
-    // );
-
-    await db
-      .insertInto("cut")
-      .values(
-        cuts.slice(0, 20).map(({ label, start, videoId }) => ({
-          label,
-          start,
-          video_id: videoId,
-        })),
-      )
-      .execute();
+      await db
+        .insertInto("cut")
+        .values(
+          chunk.map(({ label, start, videoId }) => ({
+            label,
+            start,
+            video_id: videoId,
+          })),
+        )
+        .execute();
+    }
 
     status(201);
     return { success: true, addedVideos };
@@ -166,14 +140,6 @@ export const useAddCuts = routeAction$(
     month: z.coerce.number(),
   }),
 );
-
-export const useAddUser = routeAction$(async () => {
-  // This will only run on the server when the user submits the form (or when the action is called programmatically)
-  return {
-    success: true,
-    userID: 1,
-  };
-});
 
 export default component$(() => {
   const inputRef = useSignal<HTMLInputElement>();
