@@ -66,9 +66,19 @@ export const useCuts = routeLoader$(async ({ request }) => {
               },
         };
       }, {}),
-  );
+  ).sort(([a], [b]) => {
+    function sum(date: string) {
+      const [day, month] = date.split("/");
+      return Number(day) + Number(month);
+    }
 
-  return { cutsByDay, query };
+    return sum(a) - sum(b);
+  });
+
+  return {
+    cutsByDay,
+    query,
+  };
 });
 
 export const useUpvotes = routeLoader$(async (requestEvent) => {
