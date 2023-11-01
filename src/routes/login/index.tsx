@@ -59,7 +59,7 @@ export default component$(() => {
             Usuario
           </label>
           <input
-            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+            class="mabry border-2 border-brand-blue bg-brand-stone px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
             type="text"
             ref={inputRef}
             id="username"
@@ -92,7 +92,7 @@ export default component$(() => {
             Contraseña
           </label>
           <input
-            class="mabry border-2 border-brand-blue px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+            class="mabry border-2 border-brand-blue bg-brand-stone px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
             type="password"
             id="password"
             name="password"
