@@ -67,12 +67,26 @@ export const useCuts = routeLoader$(async ({ request }) => {
         };
       }, {}),
   ).sort(([a], [b]) => {
-    function sum(date: string) {
-      const [day, month] = date.split("/");
-      return Number(day) + Number(month);
+    function day(date: string) {
+      const [day] = date.split("/");
+
+      return Number(day);
+    }
+    function month(date: string) {
+      const [, month] = date.split("/");
+
+      return Number(month);
     }
 
-    return sum(b) - sum(a);
+    if (month(a) > month(b)) {
+      return 1;
+    } else if (month(a) < month(b)) {
+      return -1;
+    } else if (month(a) === month(b)) {
+      return day(a) > day(b) ? 1 : -1;
+    }
+
+    return 0;
   });
 
   return {
