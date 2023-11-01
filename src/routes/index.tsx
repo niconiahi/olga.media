@@ -313,7 +313,7 @@ export default component$(() => {
                                           "h-6 w-7",
                                           isUpvoted
                                             ? "fill-brand-redHover text-brand-red"
-                                            : "fill-brand-stone text-brand-redHover",
+                                            : "fill-transparent text-brand-redHover",
                                         ])}
                                       />
                                     </button>
@@ -348,7 +348,7 @@ export const HeartIcon = component$<{ class: ClassList | Signal<ClassList> }>(
   (props) => {
     return (
       <svg
-        class={clsx(["fill-transparent", props.class])}
+        class={props.class}
         viewBox="0 0 16 14"
         xmlns="http://www.w3.org/2000/svg"
       >
