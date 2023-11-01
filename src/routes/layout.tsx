@@ -281,10 +281,9 @@ export const LogoutIcon = component$<{
 }>((props) => {
   return (
     <svg
-      class={props.class}
+      class={clsx(["fill-transparant", props.class])}
       aria-hidden="true"
       viewBox="0 0 16 16"
-      fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
@@ -316,7 +315,7 @@ export const LoginIcon = component$<{ class: ClassList | Signal<ClassList> }>(
   (props) => {
     return (
       <svg
-        class={clsx(["fill-none", props.class])}
+        class={clsx(["fill-transparant", props.class])}
         viewBox="0 0 16 16"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"

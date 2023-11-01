@@ -15,12 +15,6 @@ import { getUser } from "~/utils/session";
 import { upvotesSchema, type Upvotes } from "~/routes/upvote/get/all";
 import { upvoteSchema } from "~/routes/upvote/create/[id]";
 
-export const useUserId = routeLoader$(async (requestEvent) => {
-  const user = await getUser(requestEvent);
-
-  return { userId: user?.userId };
-});
-
 export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
@@ -160,6 +154,12 @@ export const useUpvote = routeAction$(
     userId: z.union([z.coerce.string(), z.undefined()]),
   }),
 );
+
+export const useUserId = routeLoader$(async (requestEvent) => {
+  const user = await getUser(requestEvent);
+
+  return { userId: user?.userId };
+});
 
 export default component$(() => {
   const cuts = useCuts();
@@ -348,7 +348,7 @@ export const HeartIcon = component$<{ class: ClassList | Signal<ClassList> }>(
   (props) => {
     return (
       <svg
-        class={props.class}
+        class={clsx(["fill-transparent", props.class])}
         viewBox="0 0 16 14"
         xmlns="http://www.w3.org/2000/svg"
       >

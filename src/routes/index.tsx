@@ -348,7 +348,7 @@ export const HeartIcon = component$<{ class: ClassList | Signal<ClassList> }>(
   (props) => {
     return (
       <svg
-        class={props.class}
+        class={clsx(["fill-transparent", props.class])}
         viewBox="0 0 16 14"
         xmlns="http://www.w3.org/2000/svg"
       >
