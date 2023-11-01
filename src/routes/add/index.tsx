@@ -112,11 +112,13 @@ export const useAddCuts = routeAction$(
       .select(["title", "id", "hash"])
       .where((eb) => eb.or(videos.map(({ hash }) => eb("hash", "=", hash))))
       .execute();
+    console.log("addedVideos:", addedVideos);
     const cuts = (
       await Promise.all(addedVideos.map(({ hash, id }) => getCuts(hash, id)))
     ).flat();
+    console.log("cuts:", cuts);
     const chunks = cuts.reduce<Cuts[]>((acc, cut, index) => {
-      const SIZE = 20;
+      const SIZE = 10;
       const chunkIndex = Math.floor(index / SIZE);
 
       if (!acc[chunkIndex]) {
@@ -127,6 +129,7 @@ export const useAddCuts = routeAction$(
 
       return acc;
     }, []);
+    console.log("chunks ~ chunks:", chunks);
 
     Promise.all(
       chunks.map(
@@ -155,7 +158,7 @@ export const useAddCuts = routeAction$(
 
 export default component$(() => {
   const inputRef = useSignal<HTMLInputElement>();
-  const action = useAddCuts();
+  const addCuts = useAddCuts();
 
   useVisibleTask$(() => {
     if (!inputRef.value) return;
@@ -165,7 +168,7 @@ export default component$(() => {
 
   return (
     <section class="flex h-full flex-1 flex-col items-center justify-center space-y-2">
-      <Form action={action} class="w-80 space-y-2">
+      <Form action={addCuts} class="w-80 space-y-2">
         <p class="flex flex-col space-y-1">
           <label class="mabry leading-none text-brand-blue" for="day">
             Dia
@@ -195,6 +198,13 @@ export default component$(() => {
         >
           Agregar
         </button>
+        {addCuts.value && addCuts.value.length > 0 ? (
+          <ul>
+            {addCuts.value.map(({ title }) => (
+              <li key={`video_${title}`}>{title}</li>
+            ))}
+          </ul>
+        ) : null}
       </Form>
     </section>
   );
