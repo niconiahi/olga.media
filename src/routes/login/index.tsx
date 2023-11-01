@@ -48,9 +48,6 @@ export default component$(() => {
     inputRef.value.focus();
   });
 
-  console.log("loginUser.value?.failed:", loginUser.value?.failed);
-  console.log("loginUser.value.message:", loginUser.value?.message);
-
   return (
     <section class="px-auto flex h-full flex-1 flex-col items-center justify-center space-y-2">
       <Form action={loginUser} class="w-80 space-y-2">

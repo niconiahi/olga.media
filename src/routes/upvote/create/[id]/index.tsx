@@ -31,10 +31,8 @@ export const onPost: RequestHandler = async ({
   error,
 }) => {
   const data = await request.json();
-  console.log("data:", data);
   const result = bodySchema.safeParse(data);
   if (!result.success) {
-    console.log('error while parsing the data for creating the "upvote"');
     throw error(404, result.error.toString());
   }
   const { cutId, userId } = result.data;
@@ -51,7 +49,6 @@ export const onPost: RequestHandler = async ({
     .executeTakeFirst();
 
   if (!insertId) {
-    console.log('the id of the created "upvote" is corrupted');
     throw error(400, `an error occurred while creating an "upvote"`);
   }
 
