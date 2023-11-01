@@ -25,8 +25,8 @@ const cutsSchema = z.array(
 export type Cuts = z.infer<typeof cutsSchema>;
 
 function getShow(title: string): string {
-  const regex = /(Ser[ií]a\sIncre[ií]ble|So[ñn]é?\sQue\sVolaba)/g;
-  const matches = title.match(regex);
+  const regex = /(ser[ií]a\sincre[ií]ble|so[ñn][eé]?\sque\svolaba)/g;
+  const matches = title.toLocaleLowerCase().match(regex);
 
   if (!matches) {
     throw new Error('the "title" should contain the "show" name');
