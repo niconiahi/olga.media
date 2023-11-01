@@ -288,6 +288,7 @@ export const LogoutIcon = component$<{
     >
       <path
         d="M5.66667 15H2.55556C2.143 15 1.74733 14.8361 1.45561 14.5444C1.16389 14.2527 1 13.857 1 13.4444V2.55556C1 2.143 1.16389 1.74733 1.45561 1.45561C1.74733 1.16389 2.143 1 2.55556 1H5.66667"
+        class="fill-transparent"
         stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
@@ -295,6 +296,7 @@ export const LogoutIcon = component$<{
       />
       <path
         d="M11.1111 11.8889L15 8L11.1111 4.11111"
+        class="fill-transparent"
         stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
@@ -302,6 +304,7 @@ export const LogoutIcon = component$<{
       />
       <path
         d="M15 8H5.66663"
+        class="fill-transparent"
         stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
@@ -321,6 +324,7 @@ export const LoginIcon = component$<{ class: ClassList | Signal<ClassList> }>(
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
+          class="fill-transparent"
           d="M10.3334 1H13.4445C13.857 1 14.2527 1.16389 14.5444 1.45561C14.8362 1.74733 15 2.143 15 2.55556V13.4444C15 13.857 14.8362 14.2527 14.5444 14.5444C14.2527 14.8361 13.857 15 13.4445 15H10.3334"
           stroke="currentColor"
           stroke-width="2"
@@ -328,6 +332,7 @@ export const LoginIcon = component$<{ class: ClassList | Signal<ClassList> }>(
           stroke-linejoin="round"
         />
         <path
+          class="fill-transparent"
           d="M6.44446 11.8889L10.3333 8L6.44446 4.11111"
           stroke="currentColor"
           stroke-width="2"
@@ -336,6 +341,7 @@ export const LoginIcon = component$<{ class: ClassList | Signal<ClassList> }>(
         />
         <path
           d="M10.3333 8H1"
+          class="fill-transparent"
           stroke="currentColor"
           stroke-width="2"
           stroke-linecap="round"
