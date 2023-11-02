@@ -221,7 +221,7 @@ export default component$(() => {
         </Form>
       </section>
       <section class="mt-2 flex">
-        <ul class="grow space-y-2">
+        <ul class="w-full grow space-y-2">
           {cuts.value.cutsByDay
             .slice()
             .reverse()

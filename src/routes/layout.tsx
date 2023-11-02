@@ -234,7 +234,7 @@ export default component$(() => {
           </ul>
         </nav>
       </header>
-      <main class="mt-[60px] flex flex-1 flex-col px-2 pb-3 pt-2 md:mx-auto md:max-w-max md:px-8 md:pb-8">
+      <main class="mt-[60px] flex w-full flex-1 flex-col px-2 pb-3 pt-2 md:mx-auto md:max-w-3xl md:px-8 md:pb-8">
         <Slot />
       </main>
     </>

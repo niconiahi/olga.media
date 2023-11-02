@@ -32,7 +32,7 @@ export default component$(() => {
       <h2 class="bebas text-3xl uppercase leading-none text-brand-red">
         Top 20
       </h2>
-      <ul class="grow space-y-2">
+      <ul class="w-full grow space-y-2">
         {Object.entries(cuts.value.cutsByShow).map(([_show, cuts]) => {
           const show = _show.toLocaleLowerCase().includes("volaba")
             ? "sone-que-volaba"
