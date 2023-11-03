@@ -1,5 +1,5 @@
 import type { ClassList, Signal } from "@builder.io/qwik";
-import { component$, useSignal, useTask$ } from "@builder.io/qwik";
+import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import {
   routeLoader$,
   type DocumentHead,
@@ -198,7 +198,7 @@ export default component$(() => {
   const upvotesPromise = useUpvotesPromise();
   const upvotes = useSignal<Upvotes>([]);
 
-  useTask$(() => {
+  useVisibleTask$(() => {
     async function getUpvotes() {
       const nextUpvotes = await upvotesPromise.value;
 
