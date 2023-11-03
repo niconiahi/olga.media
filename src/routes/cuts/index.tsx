@@ -367,9 +367,13 @@ export default component$(() => {
                                       <HeartIcon
                                         class={clsx([
                                           "h-6 w-7",
-                                          isUpvoted
-                                            ? "fill-brand-redHover text-brand-red"
-                                            : "fill-transparent text-brand-redHover",
+                                          show === "sone-que-volaba"
+                                            ? isUpvoted
+                                              ? "fill-show-soneQueVolaba-blueHover text-show-soneQueVolaba-blue"
+                                              : "fill-transparent text-show-soneQueVolaba-blueHover"
+                                            : isUpvoted
+                                            ? "fill-show-seriaIncreible-purpleHover text-show-seriaIncreible-purple"
+                                            : "fill-transparent text-show-seriaIncreible-purpleHover",
                                         ])}
                                       />
                                     </button>
