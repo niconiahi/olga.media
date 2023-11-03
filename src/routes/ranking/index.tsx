@@ -59,7 +59,7 @@ export default component$(() => {
                     >
                       <a
                         class={clsx([
-                          "mr-2 flex w-full items-start justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
+                          "flex w-full items-start justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
                           show === "sone-que-volaba"
                             ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
                             : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
@@ -82,10 +82,22 @@ export default component$(() => {
                           {label}
                         </span>
                       </a>
-                      <div class="flex w-20 items-center justify-end bg-brand-blueHover">
-                        <span class="mabry px-1 text-brand-blue">
-                          {upvotes}
-                          <span class="sr-only">votos</span>
+                      <div class="flex items-center justify-end">
+                        <span class="mabry min-w-fit px-1 text-brand-blue">
+                          {Array.from(String(upvotes)).map((number) => (
+                            <span
+                              aria-hidden="true"
+                              class={clsx([
+                                "mabry border-2 border-b-4 border-solid px-1 py-0.5",
+                                show === "sone-que-volaba"
+                                  ? "border-show-soneQueVolaba-blue text-show-soneQueVolaba-blue"
+                                  : "border-show-seriaIncreible-purple text-show-seriaIncreible-purple",
+                              ])}
+                            >
+                              {number}
+                            </span>
+                          ))}
+                          <span class="sr-only">{upvotes} votos</span>
                         </span>
                       </div>
                     </li>
