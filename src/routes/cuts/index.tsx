@@ -122,7 +122,7 @@ export const useUpvotesPromise = routeLoader$((requestEvent) => {
 
 export const useSearch = routeAction$(
   async ({ query }, { redirect }) => {
-    throw redirect(302, query === "" ? "/" : `/?query=${query}`);
+    throw redirect(302, query === "" ? "/cuts" : `/cuts?query=${query}`);
   },
   zod$({
     query: z.string(),
