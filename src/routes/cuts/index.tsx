@@ -1,5 +1,5 @@
 import type { ClassList, Signal } from "@builder.io/qwik";
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal, useTask$ } from "@builder.io/qwik";
 import {
   routeLoader$,
   type DocumentHead,
@@ -96,26 +96,28 @@ export const useCuts = routeLoader$(async ({ request }) => {
   };
 });
 
-export const useUpvotes = routeLoader$(async (requestEvent) => {
-  const { request, platform } = requestEvent;
-  const url = new URL(request.url);
-  const db = getDb(platform);
-  const user = await getUser(requestEvent, db);
+export const useUpvotesPromise = routeLoader$((requestEvent) => {
+  return async () => {
+    const { request, platform } = requestEvent;
+    const url = new URL(request.url);
+    const db = getDb(platform);
+    const user = await getUser(requestEvent, db);
 
-  if (!user?.userId) {
-    return [] as Upvotes;
-  }
+    if (!user?.userId) {
+      return [] as Upvotes;
+    }
 
-  const raws = await (
-    await fetch(url.origin + "/upvote/get/all" + `?userId=${user.userId}`)
-  ).json();
-  const result = upvotesSchema.safeParse(raws);
-  if (!result.success) {
-    throw new Error(result.error.toString());
-  }
-  const upvotes = result.data;
+    const raws = await (
+      await fetch(url.origin + "/upvote/get/all" + `?userId=${user.userId}`)
+    ).json();
+    const result = upvotesSchema.safeParse(raws);
+    if (!result.success) {
+      throw new Error(result.error.toString());
+    }
+    const upvotes = result.data;
 
-  return upvotes;
+    return upvotes;
+  };
 });
 
 export const useSearch = routeAction$(
@@ -193,7 +195,18 @@ export default component$(() => {
   const search = useSearch();
   const upvote = useUpvote();
   const userId = useUserId();
-  const upvotes = useUpvotes();
+  const upvotesPromise = useUpvotesPromise();
+  const upvotes = useSignal<Upvotes>([]);
+
+  useTask$(() => {
+    async function getUpvotes() {
+      const nextUpvotes = await upvotesPromise.value;
+
+      upvotes.value = nextUpvotes;
+    }
+
+    getUpvotes();
+  });
 
   return (
     <>
@@ -263,6 +276,12 @@ export default component$(() => {
                         <ul>
                           {cuts
                             .map((cut) => {
+                              if (upvotes.value.length === 0)
+                                return {
+                                  ...cut,
+                                  isUpvoted: false,
+                                };
+
                               return {
                                 ...cut,
                                 isUpvoted: upvotes.value.some(
