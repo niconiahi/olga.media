@@ -1,13 +1,17 @@
-import type { D1Database } from "@cloudflare/workers-types";
 import { qwik } from "lucia/middleware";
 import { d1 } from "@lucia-auth/adapter-sqlite";
 import { lucia } from "lucia";
 import type { RequestEventLoader } from "@builder.io/qwik-city";
 import { z } from "@builder.io/qwik-city";
+import { google } from "@lucia-auth/oauth/providers";
+import { getOrigin } from "~/utils/routes";
+import type { Env } from "~/utils/env";
+import { getEnv } from "~/utils/env";
+import type { D1Database } from "@cloudflare/workers-types";
 
-export const initializeLucia = (db: D1Database) => {
+export const createAuth = (env: Env, db: D1Database) => {
   const auth = lucia({
-    env: "DEV",
+    env: env.ENVIRONMENT === "development" ? "DEV" : "PROD",
     middleware: qwik(),
     adapter: d1(db, {
       user: "user",
@@ -18,12 +22,23 @@ export const initializeLucia = (db: D1Database) => {
   return auth;
 };
 
+type Auth = ReturnType<typeof createAuth>;
+
+export const createGoogleAuth = (auth: Auth, env: Env) => {
+  return google(auth, {
+    redirectUri: `${getOrigin(env)}/login/google/callback`,
+    clientId: env.GOOGLE_CLIENT_ID,
+    clientSecret: env.GOOGLE_CLIENT_SECRET,
+  });
+};
+
 export async function getUser(
   requestEvent: RequestEventLoader<QwikCityPlatform>,
+  db: D1Database,
 ) {
   const { platform } = requestEvent;
-  const env = platform.env as { DB: D1Database };
-  const auth = initializeLucia(env.DB);
+  const env = getEnv(platform);
+  const auth = createAuth(env, db);
   const authRequest = auth.handleRequest(requestEvent);
   const session = await authRequest.validate();
   if (!session) {

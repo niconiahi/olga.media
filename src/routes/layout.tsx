@@ -7,20 +7,23 @@ import {
   routeLoader$,
   useLocation,
 } from "@builder.io/qwik-city";
-import type { D1Database } from "@cloudflare/workers-types";
 import clsx from "clsx";
-import { getUser, initializeLucia } from "~/utils/session";
+import { getDb } from "~/utils/db";
+import { getEnv } from "~/utils/env";
+import { getUser, createAuth } from "~/utils/session";
 
 export const useUserId = routeLoader$(async (requestEvent) => {
-  const user = await getUser(requestEvent);
+  const db = getDb(requestEvent.platform);
+  const user = await getUser(requestEvent, db);
 
   return { userId: user?.userId };
 });
 
 export const useLogout = routeAction$(async (_, requestEvent) => {
-  const { platform, error, headers } = requestEvent;
-  const env = platform.env as { DB: D1Database };
-  const auth = initializeLucia(env.DB);
+  const { error, headers, platform } = requestEvent;
+  const env = getEnv(platform);
+  const db = getDb(platform);
+  const auth = createAuth(env, db);
   const authRequest = auth.handleRequest(requestEvent);
   const session = await authRequest.validate();
   if (!session) {

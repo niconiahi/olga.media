@@ -58,6 +58,7 @@
   },
   "dependencies": {
     "@lucia-auth/adapter-sqlite": "^2.0.1",
+    "@lucia-auth/oauth": "^3.3.1",
     "clsx": "^2.0.0",
     "kysely": "^0.26.3",
     "kysely-d1": "^0.3.0",

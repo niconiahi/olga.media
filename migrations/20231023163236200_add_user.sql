@@ -1,6 +1,5 @@
 CREATE TABLE "user" (
-  "id" VARCHAR(15) NOT NULL PRIMARY KEY,
-  "username" TEXT NOT NULL
+  "id" VARCHAR(15) NOT NULL PRIMARY KEY
 );
 
 CREATE TABLE "user_key" (

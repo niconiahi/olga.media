@@ -44,3 +44,4 @@ lerna-debug.log*
 functions/**/*.js
 .wrangler
 .env
+.dev.vars

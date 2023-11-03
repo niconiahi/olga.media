@@ -10,6 +10,9 @@ module.exports = {
         brandBlue: "#015FA0 2px 4px 0px 0px",
       },
       colors: {
+        google: {
+          blue: "#4285F4",
+        },
         brand: {
           blue: "#015FA0",
           blueHover: "#B3E0FF",

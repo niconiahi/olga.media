@@ -1,15 +1,19 @@
-import { Form, Link, routeAction$, z, zod$ } from "@builder.io/qwik-city";
+// import { Form, Link, routeAction$, z, zod$ } from "@builder.io/qwik-city";
+import { Link, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import { LuciaError } from "lucia";
-import type { D1Database } from "@cloudflare/workers-types";
+import type { ClassList, Signal } from "@builder.io/qwik";
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import clsx from "clsx";
-import { initializeLucia } from "~/utils/session";
+// import clsx from "clsx";
+import { createAuth } from "~/utils/session";
+import { getEnv } from "~/utils/env";
+import { getDb } from "~/utils/db";
 
 export const useLoginUser = routeAction$(
   async ({ username, password }, { platform, redirect, headers, fail }) => {
     try {
-      const env = platform.env as { DB: D1Database };
-      const auth = initializeLucia(env.DB);
+      const env = getEnv(platform);
+      const db = getDb(platform);
+      const auth = createAuth(env, db);
       const key = await auth.useKey(
         "username",
         username.toLowerCase(),
@@ -40,7 +44,7 @@ export const useLoginUser = routeAction$(
 
 export default component$(() => {
   const inputRef = useSignal<HTMLInputElement>();
-  const loginUser = useLoginUser();
+  // const loginUser = useLoginUser();
 
   useVisibleTask$(() => {
     if (!inputRef.value) return;
@@ -49,8 +53,8 @@ export default component$(() => {
   });
 
   return (
-    <section class="px-auto flex h-full flex-1 flex-col items-center justify-center space-y-2">
-      <Form action={loginUser} class="w-80 space-y-2">
+    <section class="px-auto mx-auto flex h-full w-80 flex-1 flex-col items-end justify-center space-y-2">
+      {/* <Form action={loginUser} class="w-full space-y-2">
         <p class="flex flex-col space-y-1">
           <label class="mabry leading-none text-brand-blue" for="username">
             Usuario
@@ -115,7 +119,7 @@ export default component$(() => {
           Ingresar
         </button>
       </Form>
-      <p class="wabry w-80 text-end font-medium text-brand-blue">
+      <p class="wabry text-end font-medium text-brand-blue">
         Aún no tenés cuenta?{" "}
         <Link
           class="text-brand-blue underline decoration-brand-red decoration-dotted decoration-2 underline-offset-1 outline-4 transition-all duration-100 focus-visible:outline focus-visible:outline-brand-blue md:hover:underline-offset-4"
@@ -123,7 +127,36 @@ export default component$(() => {
         >
           Registrate
         </Link>
-      </p>
+      </p> */}
+      <Link
+        href="/login/google"
+        class="mabry flex w-full flex-row items-center justify-center border-2 border-solid border-google-blue bg-google-blue py-2 text-2xl text-brand-stone outline-4 -outline-offset-1 focus-visible:outline focus-visible:outline-brand-red"
+      >
+        <GoogleIcon class="mr-2 h-6 w-6" />
+        Ingresar con Google
+      </Link>
     </section>
   );
 });
+
+export const GoogleIcon = component$<{ class: ClassList | Signal<ClassList> }>(
+  (props) => {
+    return (
+      <svg
+        class={props.class}
+        aria-hidden="true"
+        focusable="false"
+        data-prefix="fab"
+        data-icon="google"
+        role="img"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 488 512"
+      >
+        <path
+          fill="currentColor"
+          d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+        />
+      </svg>
+    );
+  },
+);

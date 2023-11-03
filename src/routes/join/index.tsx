@@ -1,15 +1,17 @@
 import { Form, Link, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import { LuciaError } from "lucia";
-import type { D1Database } from "@cloudflare/workers-types";
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import clsx from "clsx";
-import { initializeLucia } from "~/utils/session";
+import { createAuth } from "~/utils/session";
+import { getEnv } from "~/utils/env";
+import { getDb } from "~/utils/db";
 
 export const useCreateUser = routeAction$(
   async ({ username, password }, { platform, redirect, headers, fail }) => {
     try {
-      const env = platform.env as { DB: D1Database };
-      const auth = initializeLucia(env.DB);
+      const env = getEnv(platform);
+      const db = getDb(platform);
+      const auth = createAuth(env, db);
       const user = await auth.createUser({
         key: {
           providerId: "username",

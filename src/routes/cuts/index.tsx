@@ -14,6 +14,7 @@ import { cutsSchema } from "~/routes/cut/get/all";
 import { getUser } from "~/utils/session";
 import { upvotesSchema, type Upvotes } from "~/routes/upvote/get/all";
 import { upvoteSchema } from "~/routes/upvote/create/[id]";
+import { getDb } from "~/utils/db";
 
 export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
@@ -96,9 +97,10 @@ export const useCuts = routeLoader$(async ({ request }) => {
 });
 
 export const useUpvotes = routeLoader$(async (requestEvent) => {
-  const { request } = requestEvent;
+  const { request, platform } = requestEvent;
   const url = new URL(request.url);
-  const user = await getUser(requestEvent);
+  const db = getDb(platform);
+  const user = await getUser(requestEvent, db);
 
   if (!user?.userId) {
     return [] as Upvotes;
@@ -180,7 +182,8 @@ export const useUpvote = routeAction$(
 );
 
 export const useUserId = routeLoader$(async (requestEvent) => {
-  const user = await getUser(requestEvent);
+  const db = getDb(requestEvent.platform);
+  const user = await getUser(requestEvent, db);
 
   return { userId: user?.userId };
 });
