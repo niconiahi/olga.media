@@ -198,7 +198,9 @@ export default component$(() => {
   const upvotesPromise = useUpvotesPromise();
   const upvotes = useSignal<Upvotes>([]);
 
-  useVisibleTask$(() => {
+  useVisibleTask$(({ track }) => {
+    track(() => upvotesPromise.value);
+
     async function getUpvotes() {
       const nextUpvotes = await upvotesPromise.value;
 
