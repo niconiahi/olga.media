@@ -43,7 +43,7 @@ export const onGet: RequestHandler = async ({
 
   cacheControl({
     staleWhileRevalidate: 60 * 60 * 24 * 7,
-    maxAge: 60 * 5,
+    sMaxAge: 60 * 5,
   });
   json(200, cuts);
 };
