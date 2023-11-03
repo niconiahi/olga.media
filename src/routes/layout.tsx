@@ -96,10 +96,10 @@ export default component$(() => {
         <Link
           href="/"
           ref={logoRef}
-          tabIndex={location.url.pathname === "/" ? -1 : 0}
+          tabIndex={location.url.pathname === "/cuts/" ? -1 : 0}
           class={clsx([
             "pointer-events-auto flex items-center rounded-full border-2 border-solid border-brand-blue bg-brand-stone p-1.5 outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover",
-            location.url.pathname === "/" &&
+            location.url.pathname === "/cuts" &&
               "md:-translate-x-0.5 md:-translate-y-1 md:border-brand-red md:shadow-brandBlue md:transition-all md:duration-100",
           ])}
         >

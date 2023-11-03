@@ -319,7 +319,15 @@ export default component$(() => {
                                     >
                                       {label}
                                     </span>
-                                    <span class="mabry text-brand-red">
+                                    <span
+                                      class={clsx([
+                                        "mabry",
+
+                                        show === "sone-que-volaba"
+                                          ? " text-show-soneQueVolaba-blue"
+                                          : " text-show-seriaIncreible-purple",
+                                      ])}
+                                    >
                                       {start}
                                     </span>
                                   </a>

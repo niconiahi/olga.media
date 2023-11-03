@@ -81,9 +81,8 @@ export default component$(() => {
                         >
                           {label}
                         </span>
-                        <span class="mabry text-brand-red">{start}</span>
                       </a>
-                      <div class="flex w-[4.75rem] items-center justify-end bg-brand-blueHover">
+                      <div class="flex w-20 items-center justify-end bg-brand-blueHover">
                         <span class="mabry px-1 text-brand-blue">
                           {upvotes}
                           <span class="sr-only">votos</span>
