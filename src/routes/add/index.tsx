@@ -4,6 +4,7 @@ import { Form, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import type { D1Database } from "@cloudflare/workers-types";
 import { Kysely } from "kysely";
 import { D1Dialect } from "kysely-d1";
+import clsx from "clsx";
 import { dedupe, getRaws } from "~/utils/cut";
 
 const videosSchema = z.array(
@@ -77,10 +78,16 @@ export const useAddCuts = routeAction$(
 
     const result = videosSchema.safeParse(raws);
     if (!result.success) {
-      return fail(400, { error: result.error.toString() });
+      return fail(400, { success: false, error: result.error.toString() });
     }
 
     const nextVideos = result.data;
+    if (nextVideos.length === 0) {
+      return fail(409, {
+        success: false,
+        error: "No se encontraron videos en este dia",
+      });
+    }
     const prevVideos = await db
       .selectFrom("video")
       .select(["hash"])
@@ -91,7 +98,10 @@ export const useAddCuts = routeAction$(
       ({ hash }) => !prevVideos.some((prevVideo) => prevVideo.hash === hash),
     );
     if (videos.length === 0) {
-      return fail(409, []);
+      return fail(409, {
+        success: false,
+        error: "Los videos de este dia ya fueron agregados",
+      });
     }
 
     await db
@@ -164,7 +174,18 @@ export default component$(() => {
             ref={inputRef}
             id="day"
             name="day"
+            aria-invalid={addCuts.value?.error ? "true" : undefined}
+            aria-errormessage="day-error"
           />
+          <span
+            id="day-error"
+            class={clsx([
+              "mabry text-brand-red underline decoration-brand-blue decoration-dotted decoration-2 underline-offset-1",
+              addCuts.value?.error ? "visible" : "invisible",
+            ])}
+          >
+            {addCuts.value?.error ?? "Olga"}
+          </span>
         </p>
         <p class="flex flex-col space-y-1">
           <label class="mabry leading-none text-brand-blue" for="month">
@@ -183,18 +204,16 @@ export default component$(() => {
         >
           Agregar
         </button>
-        {/* @ts-expect-error asdfsdf */}
-        {addCuts.value?.addedVideos && addCuts.value.addedVideos.length > 0 ? (
+        {addCuts.value &&
+        addCuts.value.success === true &&
+        addCuts.value.addedVideos &&
+        addCuts.value.addedVideos.length > 0 ? (
           <ul>
-            {/* @ts-expect-error asdfsdf */}
             {addCuts.value.addedVideos.map(({ title }) => (
               <li key={`video_${title}`}>{title}</li>
             ))}
           </ul>
         ) : null}
-        {/* {addCuts.value?.chunks && addCuts.value.chunks > 0 ? (
-          <textarea value={JSON.stringify(addCuts.value.chunks, null, 2)} />
-        ) : null} */}
       </Form>
     </section>
   );
