@@ -31,7 +31,7 @@ export const RouteTransition = component$(() => {
     return (
       <div
         role="progressbar"
-        class="route-transition fixed left-0 top-0 h-1.5 w-full bg-brand-blue"
+        class="route-transition fixed left-0 top-0 h-1.5 w-full bg-gradient-to-r from-brand-blue to-brand-red"
       />
     );
 

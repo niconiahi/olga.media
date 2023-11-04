@@ -1,5 +1,5 @@
 .route-transition {
-  animation-duration: 3s;
+  animation-duration: 2s;
   animation-name: routeloading;
   animation-timing-function: ease-out;
 }
