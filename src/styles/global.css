@@ -1,4 +1,5 @@
 @import url("./a11yreset.css");
+@import url("./animations.css");
 
 @tailwind base;
 @tailwind components;

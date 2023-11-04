@@ -1,0 +1,15 @@
+.route-transition {
+  animation-duration: 10s;
+  animation-name: routeloading;
+  animation-timing-function: ease-out;
+}
+
+@keyframes routeloading {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}

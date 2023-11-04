@@ -5,7 +5,6 @@ import {
   ServiceWorkerRegister,
 } from "@builder.io/qwik-city";
 import { useDocumentHead, useLocation } from "@builder.io/qwik-city";
-
 import "~/styles/global.css";
 
 export default component$(() => {
@@ -19,9 +18,24 @@ export default component$(() => {
       </head>
       <body lang="en">
         <RouterOutlet />
+        <RouteTransition />
       </body>
     </QwikCityProvider>
   );
+});
+
+export const RouteTransition = component$(() => {
+  const location = useLocation();
+
+  if (location.isNavigating)
+    return (
+      <div
+        role="progressbar"
+        class="route-transition fixed left-0 top-0 h-1.5 w-full bg-brand-blue"
+      />
+    );
+
+  return null;
 });
 
 export const Head = component$(() => {
