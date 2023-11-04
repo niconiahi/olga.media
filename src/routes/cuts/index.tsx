@@ -356,7 +356,12 @@ export default component$(() => {
                                     />
                                     <button
                                       type="submit"
-                                      class="outline-4 focus-visible:outline focus-visible:outline-brand-red"
+                                      class={clsx([
+                                        "outline-4 focus-visible:outline",
+                                        show === "sone-que-volaba"
+                                          ? "focus-visible:outline-show-soneQueVolaba-blue"
+                                          : "focus-visible:outline-show-seriaIncreible-purple",
+                                      ])}
                                       aria-label={
                                         isUpvoted
                                           ? "Quitar voto de este corte"
