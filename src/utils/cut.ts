@@ -27,3 +27,22 @@ export function dedupe(cuts: Cuts) {
 
   return cuts.slice(0, index + 1);
 }
+
+// the "start" comes in the form of "dd:dd:dd"
+export function getSeconds(start: string) {
+  const parts = start.split(":").map(Number);
+
+  let seconds = 0;
+  if (parts.length === 3) {
+    seconds += parts[0] * 3600;
+    seconds += parts[1] * 60;
+    seconds += parts[2];
+  } else if (parts.length === 2) {
+    seconds += parts[0] * 60;
+    seconds += parts[1];
+  } else if (parts.length === 1) {
+    seconds = parts[0];
+  }
+
+  return seconds;
+}

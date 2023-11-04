@@ -7,8 +7,7 @@ export default component$(() => {
       <ul class="space-y-2">
         <li class="flex">
           <Link
-            // eslint-disable-next-line prettier/prettier
-            class="mabry w-full text-center px-4 py-2.5 text-lg text-brand-blue outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue"
+            class="mabry w-full border-2 border-solid border-brand-blue px-4 py-2.5 text-center text-lg text-brand-blue outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red"
             href="/cuts"
           >
             Cortes
@@ -16,8 +15,7 @@ export default component$(() => {
         </li>
         <li class="flex">
           <Link
-            // eslint-disable-next-line prettier/prettier
-            class="mabry text-center w-full px-4 py-2.5 text-lg text-brand-blue outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red border-2 border-solid border-brand-blue"
+            class="mabry w-full border-2 border-solid border-brand-blue px-4 py-2.5 text-center text-lg text-brand-blue outline-4 outline-offset-0 focus-visible:outline focus-visible:outline-brand-red"
             href="/ranking"
           >
             Ranking
