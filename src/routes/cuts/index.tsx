@@ -1,12 +1,10 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import type { RequestHandler } from "@builder.io/qwik-city";
 import {
   routeLoader$,
   zod$,
   Form,
   routeAction$,
   z,
-  server$,
 } from "@builder.io/qwik-city";
 import clsx from "clsx";
 import type { Cuts } from "~/routes/cut/get/all";
@@ -19,13 +17,6 @@ import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { HeartIcon } from "~/icons/heart";
 import { getSeconds } from "~/utils/cut";
-
-export const onGet: RequestHandler = async ({ cacheControl }) => {
-  cacheControl({
-    staleWhileRevalidate: 60 * 60 * 24 * 7,
-    sMaxAge: 60 * 5,
-  });
-};
 
 export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
@@ -107,27 +98,29 @@ export const useCuts = routeLoader$(async ({ request }) => {
   };
 });
 
-export const getUpvotes = server$(async function () {
-  const { request, platform } = this;
-  const url = new URL(request.url);
-  const db = getDb(platform);
-  const user = await getUser(this, db);
+export const useUpvotesPromise = routeLoader$((requestEvent) => {
+  return async () => {
+    const { request, platform } = requestEvent;
+    const url = new URL(request.url);
+    const db = getDb(platform);
+    const user = await getUser(requestEvent, db);
 
-  if (!user?.userId) {
-    return [] as Upvotes;
-  }
+    if (!user?.userId) {
+      return [] as Upvotes;
+    }
 
-  const raws = await (
-    await fetch(url.origin + "/upvote/get/all" + `?userId=${user.userId}`)
-  ).json();
+    const raws = await (
+      await fetch(url.origin + "/upvote/get/all" + `?userId=${user.userId}`)
+    ).json();
 
-  const result = upvotesSchema.safeParse(raws);
-  if (!result.success) {
-    throw new Error(result.error.toString());
-  }
-  const upvotes = result.data;
+    const result = upvotesSchema.safeParse(raws);
+    if (!result.success) {
+      throw new Error(result.error.toString());
+    }
+    const upvotes = result.data;
 
-  return upvotes;
+    return upvotes;
+  };
 });
 
 export const useSearch = routeAction$(
@@ -205,11 +198,19 @@ export default component$(() => {
   const search = useSearch();
   const upvote = useUpvote();
   const userId = useUserId();
+  const upvotesPromise = useUpvotesPromise();
   const upvotes = useSignal<Upvotes>([]);
 
-  useVisibleTask$(async () => {
-    const nextUpvotes = await getUpvotes();
-    upvotes.value = nextUpvotes;
+  useVisibleTask$(({ track }) => {
+    track(() => upvotesPromise.value);
+
+    async function getUpvotes() {
+      const nextUpvotes = await upvotesPromise.value;
+
+      upvotes.value = nextUpvotes;
+    }
+
+    getUpvotes();
   });
 
   return (
