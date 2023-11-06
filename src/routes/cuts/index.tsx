@@ -1,7 +1,6 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
 import {
   routeLoader$,
-  type DocumentHead,
   zod$,
   Form,
   routeAction$,
@@ -18,16 +17,6 @@ import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { HeartIcon } from "~/icons/heart";
 import { getSeconds } from "~/utils/cut";
-
-export const head: DocumentHead = {
-  title: "Olga TV",
-  meta: [
-    {
-      name: "description",
-      content: "Stream art",
-    },
-  ],
-};
 
 export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
@@ -123,6 +112,7 @@ export const useUpvotesPromise = routeLoader$((requestEvent) => {
     const raws = await (
       await fetch(url.origin + "/upvote/get/all" + `?userId=${user.userId}`)
     ).json();
+
     const result = upvotesSchema.safeParse(raws);
     if (!result.success) {
       throw new Error(result.error.toString());

@@ -1,7 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import {
   routeLoader$,
-  type DocumentHead,
   zod$,
   Form,
   routeAction$,
@@ -18,16 +17,6 @@ import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { getSeconds } from "~/utils/cut";
 import { HeartIcon } from "~/icons/heart";
-
-export const head: DocumentHead = {
-  title: "Olga TV",
-  meta: [
-    {
-      name: "description",
-      content: "Stream art",
-    },
-  ],
-};
 
 export const useUserId = routeLoader$(async (requestEvent) => {
   const db = getDb(requestEvent.platform);

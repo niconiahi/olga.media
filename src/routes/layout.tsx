@@ -17,6 +17,13 @@ import { getEnv } from "~/utils/env";
 import { getUser, createAuth } from "~/utils/session";
 
 export const head: DocumentHead = {
+  title: "Olga",
+  meta: [
+    {
+      name: "description",
+      content: "Canal de stream art",
+    },
+  ],
   links: [
     {
       rel: "preload",
