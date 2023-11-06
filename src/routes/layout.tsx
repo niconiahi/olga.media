@@ -24,20 +24,6 @@ export const head: DocumentHead = {
       content: "Canal de stream art",
     },
   ],
-  links: [
-    {
-      rel: "preload",
-      href: "/fonts/BebasKai.ttf",
-      as: "font",
-      type: "font/ttf",
-    },
-    {
-      rel: "preload",
-      href: "/fonts/MabryPro-Medium.ttf",
-      as: "font",
-      type: "font/ttf",
-    },
-  ],
 };
 
 export const useUserId = routeLoader$(async (requestEvent) => {
