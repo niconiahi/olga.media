@@ -1,6 +1,6 @@
 import type { Env } from "~/utils/env";
 
-export const PRODUCTION_ORIGIN = "https://olga-tv.pages.dev";
+export const PRODUCTION_ORIGIN = "https://olga.media";
 export const DEVELOPMENT_ORIGIN = "http://localhost:8788";
 
 export function getOrigin(env: Env) {

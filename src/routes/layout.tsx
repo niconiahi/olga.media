@@ -1,4 +1,5 @@
 import { component$, Slot, useSignal, useVisibleTask$ } from "@builder.io/qwik";
+import type { DocumentHead } from "@builder.io/qwik-city";
 import {
   Form,
   Link,
@@ -14,6 +15,23 @@ import { OlgaIcon } from "~/icons/olga";
 import { getDb } from "~/utils/db";
 import { getEnv } from "~/utils/env";
 import { getUser, createAuth } from "~/utils/session";
+
+export const head: DocumentHead = {
+  links: [
+    {
+      rel: "preload",
+      href: "/fonts/BebasKai.ttf",
+      as: "font",
+      type: "font/ttf",
+    },
+    {
+      rel: "preload",
+      href: "/fonts/MabryPro-Medium.ttf",
+      as: "font",
+      type: "font/ttf",
+    },
+  ],
+};
 
 export const useUserId = routeLoader$(async (requestEvent) => {
   const db = getDb(requestEvent.platform);
