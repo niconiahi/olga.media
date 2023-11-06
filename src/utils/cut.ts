@@ -1,4 +1,4 @@
-import type { Cuts } from "~/routes/add";
+import { z } from "@builder.io/qwik-city";
 
 function getSafeStart(start: string) {
   const pieces = start.replaceAll("\\n", "").split(":");
@@ -18,6 +18,14 @@ function getSafeStart(start: string) {
     .join(":");
 }
 
+export const cutsSchema = z.array(
+  z.object({
+    start: z.string(),
+    label: z.string(),
+    videoId: z.number(),
+  }),
+);
+export type Cuts = z.infer<typeof cutsSchema>;
 export function getRaws(html: string, videoId: number): unknown[] {
   const raws = [] as unknown[];
   const regex =
@@ -45,7 +53,7 @@ export function dedupe(cuts: Cuts) {
   return cuts.slice(0, index + 1);
 }
 
-// the "start" comes in the form of "dd:dd:dd"
+// the "start" comes in the form of "d{1,2}:dd{1,2}:dd{1,2}"
 export function getSeconds(start: string) {
   const parts = start.split(":").map(Number);
 
@@ -62,4 +70,18 @@ export function getSeconds(start: string) {
   }
 
   return seconds;
+}
+
+export async function getCuts(hash: string, videoId: number) {
+  const url = `https://www.youtube.com/watch?v=${hash}`;
+  const res = await fetch(url);
+  const html = await res.text();
+  const raws = getRaws(html, videoId);
+  const result = cutsSchema.safeParse(raws);
+  if (!result.success) {
+    throw new Error(result.error.toString());
+  }
+
+  const cuts = result.data;
+  return dedupe(cuts);
 }

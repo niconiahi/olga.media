@@ -5,7 +5,7 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { Kysely } from "kysely";
 import { D1Dialect } from "kysely-d1";
 import clsx from "clsx";
-import { dedupe, getRaws } from "~/utils/cut";
+import { getCuts } from "~/utils/cut";
 
 const videosSchema = z.array(
   z.object({
@@ -14,16 +14,6 @@ const videosSchema = z.array(
     title: z.string(),
   }),
 );
-
-const cutsSchema = z.array(
-  z.object({
-    start: z.string(),
-    label: z.string(),
-    videoId: z.number(),
-  }),
-);
-
-export type Cuts = z.infer<typeof cutsSchema>;
 
 function getShow(title: string): string {
   const regex = /(ser[ií]a\sincre[ií]ble|so[ñn][eé]?\sque\svolaba)/g;
@@ -34,20 +24,6 @@ function getShow(title: string): string {
   }
 
   return matches[0];
-}
-
-export async function getCuts(hash: string, videoId: number) {
-  const url = `https://www.youtube.com/watch?v=${hash}`;
-  const res = await fetch(url);
-  const html = await res.text();
-  const raws = getRaws(html, videoId);
-  const result = cutsSchema.safeParse(raws);
-  if (!result.success) {
-    throw new Error(result.error.toString());
-  }
-
-  const cuts = result.data;
-  return dedupe(cuts);
 }
 
 export const useAddCuts = routeAction$(
