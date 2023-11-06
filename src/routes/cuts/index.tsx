@@ -1,5 +1,4 @@
 import { component$, useSignal, useVisibleTask$ } from "@builder.io/qwik";
-import type { RequestHandler } from "@builder.io/qwik-city";
 import {
   routeLoader$,
   zod$,
@@ -18,13 +17,6 @@ import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { HeartIcon } from "~/icons/heart";
 import { getSeconds } from "~/utils/cut";
-
-export const onGet: RequestHandler = async ({ cacheControl }) => {
-  cacheControl({
-    staleWhileRevalidate: 60 * 60 * 24 * 7,
-    sMaxAge: 60 * 5,
-  });
-};
 
 export const useCuts = routeLoader$(async ({ request }) => {
   const url = new URL(request.url);
@@ -112,7 +104,6 @@ export const useUpvotesPromise = routeLoader$((requestEvent) => {
     const url = new URL(request.url);
     const db = getDb(platform);
     const user = await getUser(requestEvent, db);
-    console.log("return ~ user:", user);
 
     if (!user?.userId) {
       return [] as Upvotes;
