@@ -1,7 +1,10 @@
 import { qwik } from "lucia/middleware";
 import { d1 } from "@lucia-auth/adapter-sqlite";
 import { lucia } from "lucia";
-import type { RequestEventLoader } from "@builder.io/qwik-city";
+import type {
+  RequestEventBase,
+  RequestEventLoader,
+} from "@builder.io/qwik-city";
 import { z } from "@builder.io/qwik-city";
 import { google } from "@lucia-auth/oauth/providers";
 import { getOrigin } from "~/utils/routes";
@@ -33,7 +36,9 @@ export const createGoogleAuth = (auth: Auth, env: Env) => {
 };
 
 export async function getUser(
-  requestEvent: RequestEventLoader<QwikCityPlatform>,
+  requestEvent:
+    | RequestEventLoader<QwikCityPlatform>
+    | RequestEventBase<QwikCityPlatform>,
   db: D1Database,
 ) {
   const { platform } = requestEvent;
