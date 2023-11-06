@@ -41,6 +41,7 @@ export async function getUser(
   const auth = createAuth(env, db);
   const authRequest = auth.handleRequest(requestEvent);
   const session = await authRequest.validate();
+  console.log("session:", session);
   if (!session) {
     return null;
   }

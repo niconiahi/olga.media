@@ -112,6 +112,7 @@ export const useUpvotesPromise = routeLoader$((requestEvent) => {
     const url = new URL(request.url);
     const db = getDb(platform);
     const user = await getUser(requestEvent, db);
+    console.log("return ~ user:", user);
 
     if (!user?.userId) {
       return [] as Upvotes;
