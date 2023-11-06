@@ -10,7 +10,7 @@
   src: url("/fonts/BebasKai.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
@@ -18,7 +18,7 @@
   src: url("/fonts/MabryPro-Medium.ttf") format("truetype");
   font-weight: medium;
   font-style: medium;
-  font-display: block;
+  font-display: swap;
 }
 
 .sr-only {
