@@ -1,13 +1,16 @@
 import { component$ } from "@builder.io/qwik";
-import { routeLoader$ } from "@builder.io/qwik-city";
+import { routeLoader$, z } from "@builder.io/qwik-city";
 import type { Cuts } from "~/routes/cut/get/ranking";
 import { cutsSchema } from "~/routes/cut/get/ranking";
 import clsx from "clsx";
 import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { getSeconds } from "~/utils/cut";
+import { getShow, showSchema } from "~/utils/video";
 
-export const useCuts = routeLoader$(async ({ request }) => {
+const cutsByShowSchema = z.array(z.tuple([showSchema, cutsSchema]));
+
+export const useCuts = routeLoader$(async ({ request, error }) => {
   const url = new URL(request.url);
   const raws = await (await fetch(url.origin + "/cut/get/ranking")).json();
   const result = cutsSchema.safeParse(raws);
@@ -15,14 +18,22 @@ export const useCuts = routeLoader$(async ({ request }) => {
     throw new Error(result.error.toString());
   }
   const cuts = result.data;
-  const cutsByShow = cuts.reduce<{ [show: string]: Cuts }>((prevShows, cut) => {
-    const { show } = cut;
+  const cutsByShow = Object.entries(
+    cuts.reduce<{ [show: string]: Cuts }>((prevShows, cut) => {
+      const { show: _show } = cut;
+      const show = getShow(_show);
 
-    return {
-      ...prevShows,
-      [show]: prevShows[show] ? [...prevShows[show], cut] : [cut],
-    };
-  }, {});
+      return {
+        ...prevShows,
+        [show]: prevShows[show] ? [...prevShows[show], cut] : [cut],
+      };
+    }, {}),
+  );
+
+  const _result = cutsByShowSchema.safeParse(cutsByShow);
+  if (!_result.success) {
+    throw error(400, _result.error.toString());
+  }
 
   return { cutsByShow };
 });
@@ -36,11 +47,7 @@ export default component$(() => {
         Top 20
       </h2>
       <ul class="w-full grow space-y-2">
-        {Object.entries(cuts.value.cutsByShow).map(([_show, cuts]) => {
-          const show = _show.toLocaleLowerCase().includes("volaba")
-            ? "sone-que-volaba"
-            : "seria-increible";
-
+        {cuts.value.cutsByShow.map(([show, cuts]) => {
           return (
             <li
               key={`show-${show}`}

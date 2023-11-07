@@ -17,15 +17,24 @@ import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { HeartIcon } from "~/icons/heart";
 import { getSeconds } from "~/utils/cut";
+import { getShow, showSchema } from "~/utils/video";
 
-export const useCuts = routeLoader$(async ({ request }) => {
+const daySchema = z
+  .string()
+  .regex(/\d{1,}\/\d{1,2}/g, 'The expected day format is "dd/dd"');
+
+const cutsByDaySchema = z.array(
+  z.tuple([daySchema, z.array(z.tuple([showSchema, cutsSchema]))]),
+);
+
+export const useCuts = routeLoader$(async ({ request, error }) => {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
   const query = searchParams.get("query");
   const raws = await (await fetch(url.origin + "/cut/get/all")).json();
   const result = cutsSchema.safeParse(raws);
   if (!result.success) {
-    throw new Error(result.error.toString());
+    throw error(400, result.error.toString());
   }
   const cuts = result.data;
   const cutsByDay = Object.entries(
@@ -54,7 +63,8 @@ export const useCuts = routeLoader$(async ({ request }) => {
         [day: string]: { [show: string]: Cuts };
       }>((prevDays, cut) => {
         const day = `${cut.day}/${cut.month}`;
-        const { show } = cut;
+        const { show: _show } = cut;
+        const show = getShow(_show);
         return {
           ...prevDays,
           [day]: prevDays[day]
@@ -69,31 +79,40 @@ export const useCuts = routeLoader$(async ({ request }) => {
               },
         };
       }, {}),
-  ).sort(([a], [b]) => {
-    function day(date: string) {
-      const [day] = date.split("/");
+  )
+    .sort(([a], [b]) => {
+      function day(date: string) {
+        const [day] = date.split("/");
 
-      return Number(day);
-    }
-    function month(date: string) {
-      const [, month] = date.split("/");
+        return Number(day);
+      }
+      function month(date: string) {
+        const [, month] = date.split("/");
 
-      return Number(month);
-    }
+        return Number(month);
+      }
 
-    if (month(a) > month(b)) {
-      return 1;
-    } else if (month(a) < month(b)) {
-      return -1;
-    } else if (month(a) === month(b)) {
-      return day(a) > day(b) ? 1 : -1;
-    }
+      if (month(a) > month(b)) {
+        return 1;
+      } else if (month(a) < month(b)) {
+        return -1;
+      } else if (month(a) === month(b)) {
+        return day(a) > day(b) ? 1 : -1;
+      }
 
-    return 0;
-  });
+      return 0;
+    })
+    .map((day) => {
+      return [day[0], Object.entries(day[1])];
+    });
+
+  const _result = cutsByDaySchema.safeParse(cutsByDay);
+  if (!_result.success) {
+    throw error(400, _result.error.toString());
+  }
 
   return {
-    cutsByDay,
+    cutsByDay: _result.data,
     query,
   };
 });
@@ -246,156 +265,153 @@ export default component$(() => {
           {cuts.value.cutsByDay
             .slice()
             .reverse()
-            .map(([day, cuts], index) => (
-              <li key={`day-${day}`} class="space-y-2">
-                <h4
-                  class={clsx([
-                    "bebas text-3xl uppercase leading-none text-brand-red",
-                    index > 0 ? "mt-3" : "mt-0",
-                  ])}
-                >
-                  {day}
-                </h4>
-                <ul class="space-y-3">
-                  {Object.entries(cuts).map(([_show, cuts]) => {
-                    const show = _show.toLocaleLowerCase().includes("volaba")
-                      ? "sone-que-volaba"
-                      : "seria-increible";
+            .map(([day, cuts], index) => {
+              return (
+                <li key={`day-${day}`} class="space-y-2">
+                  <h4
+                    class={clsx([
+                      "bebas text-3xl uppercase leading-none text-brand-red",
+                      index > 0 ? "mt-3" : "mt-0",
+                    ])}
+                  >
+                    {day}
+                  </h4>
+                  <ul class="space-y-3">
+                    {cuts.map(([show, cuts]) => {
+                      return (
+                        <li
+                          key={`show-${day}-${show}`}
+                          class={clsx([
+                            "mr-0.5 space-y-2 border-2 p-2",
+                            show === "sone-que-volaba"
+                              ? "border-show-soneQueVolaba-blue shadow-soneQueVolaba"
+                              : "border-show-seriaIncreible-purple shadow-seriaIncreible",
+                          ])}
+                        >
+                          {show === "seria-increible" ? (
+                            <SeriaIncreibleIcon />
+                          ) : null}
+                          {show === "sone-que-volaba" ? (
+                            <SoneQueVolabaIcon />
+                          ) : null}
+                          <ul>
+                            {cuts
+                              .map((cut) => {
+                                if (upvotes.value.length === 0)
+                                  return {
+                                    ...cut,
+                                    isUpvoted: false,
+                                  };
 
-                    return (
-                      <li
-                        key={`show-${day}-${show}`}
-                        class={clsx([
-                          "mr-0.5 space-y-2 border-2 p-2",
-                          show === "sone-que-volaba"
-                            ? "border-show-soneQueVolaba-blue shadow-soneQueVolaba"
-                            : "border-show-seriaIncreible-purple shadow-seriaIncreible",
-                        ])}
-                      >
-                        {show === "seria-increible" ? (
-                          <SeriaIncreibleIcon />
-                        ) : null}
-                        {show === "sone-que-volaba" ? (
-                          <SoneQueVolabaIcon />
-                        ) : null}
-                        <ul>
-                          {cuts
-                            .map((cut) => {
-                              if (upvotes.value.length === 0)
                                 return {
                                   ...cut,
-                                  isUpvoted: false,
+                                  isUpvoted: upvotes.value.some(
+                                    ({ cut_id }) => cut_id === cut.id,
+                                  ),
                                 };
-
-                              return {
-                                ...cut,
-                                isUpvoted: upvotes.value.some(
-                                  ({ cut_id }) => cut_id === cut.id,
-                                ),
-                              };
-                            })
-                            .map(({ label, start, hash, id, isUpvoted }) => {
-                              return (
-                                <li
-                                  key={`cut-${day}-${show}-${hash}`}
-                                  class="flex items-start space-x-2 py-0.5"
-                                >
-                                  <a
-                                    class={clsx([
-                                      "flex w-full items-start justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
-                                      show === "sone-que-volaba"
-                                        ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
-                                        : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
-                                    ])}
-                                    target="_blank"
-                                    href={
-                                      `https://www.youtube.com/watch?v=${hash}` +
-                                      "&t=" +
-                                      getSeconds(start)
-                                    }
+                              })
+                              .map(({ label, start, hash, id, isUpvoted }) => {
+                                return (
+                                  <li
+                                    key={`cut-${day}-${show}-${hash}`}
+                                    class="flex items-start space-x-2 py-0.5"
                                   >
-                                    <span
+                                    <a
                                       class={clsx([
-                                        "mabry",
+                                        "flex w-full items-start justify-between space-x-2 px-0.5 font-medium md:hover:cursor-pointer",
                                         show === "sone-que-volaba"
-                                          ? "text-show-soneQueVolaba-blue"
-                                          : "text-show-seriaIncreible-purple",
+                                          ? "outline-4 focus-visible:outline focus-visible:outline-show-soneQueVolaba-blue md:hover:bg-show-soneQueVolaba-blueHover"
+                                          : "outline-4 focus-visible:outline focus-visible:outline-show-seriaIncreible-purple md:hover:bg-show-seriaIncreible-purpleHover",
                                       ])}
-                                    >
-                                      {label}
-                                    </span>
-                                    <span
-                                      class={clsx([
-                                        "mabry",
-
-                                        show === "sone-que-volaba"
-                                          ? " text-show-soneQueVolaba-blue"
-                                          : " text-show-seriaIncreible-purple",
-                                      ])}
-                                    >
-                                      {start}
-                                    </span>
-                                  </a>
-                                  <Form action={upvote} class="flex">
-                                    <span class="sr-only">
-                                      {isUpvoted
-                                        ? "Quitar voto de este corte"
-                                        : "Votar este corte para el ranking"}
-                                    </span>
-                                    <input
-                                      type="hidden"
-                                      name="isUpvoted"
-                                      value={isUpvoted ? "true" : "false"}
-                                    />
-                                    <input
-                                      type="hidden"
-                                      name="cutId"
-                                      value={id}
-                                    />
-                                    <input
-                                      type="hidden"
-                                      name="userId"
-                                      value={userId.value.userId}
-                                    />
-                                    <button
-                                      type="submit"
-                                      class={clsx([
-                                        "outline-4 focus-visible:outline",
-                                        show === "sone-que-volaba"
-                                          ? "focus-visible:outline-show-soneQueVolaba-blue"
-                                          : "focus-visible:outline-show-seriaIncreible-purple",
-                                      ])}
-                                      aria-label={
-                                        isUpvoted
-                                          ? "Quitar voto de este corte"
-                                          : "Votar este corte para el ranking"
+                                      target="_blank"
+                                      href={
+                                        `https://www.youtube.com/watch?v=${hash}` +
+                                        "&t=" +
+                                        getSeconds(start)
                                       }
-                                      aria-pressed={isUpvoted}
                                     >
-                                      <HeartIcon
+                                      <span
                                         class={clsx([
-                                          "h-6 w-7",
+                                          "mabry",
                                           show === "sone-que-volaba"
-                                            ? isUpvoted
-                                              ? "fill-show-soneQueVolaba-blueHover text-show-soneQueVolaba-blue"
-                                              : "fill-transparent text-show-soneQueVolaba-blueHover"
-                                            : isUpvoted
-                                            ? "fill-show-seriaIncreible-purpleHover text-show-seriaIncreible-purple"
-                                            : "fill-transparent text-show-seriaIncreible-purpleHover",
+                                            ? "text-show-soneQueVolaba-blue"
+                                            : "text-show-seriaIncreible-purple",
                                         ])}
+                                      >
+                                        {label}
+                                      </span>
+                                      <span
+                                        class={clsx([
+                                          "mabry",
+                                          show === "sone-que-volaba"
+                                            ? " text-show-soneQueVolaba-blue"
+                                            : " text-show-seriaIncreible-purple",
+                                        ])}
+                                      >
+                                        {start}
+                                      </span>
+                                    </a>
+                                    <Form action={upvote} class="flex">
+                                      <span class="sr-only">
+                                        {isUpvoted
+                                          ? "Quitar voto de este corte"
+                                          : "Votar este corte para el ranking"}
+                                      </span>
+                                      <input
+                                        type="hidden"
+                                        name="isUpvoted"
+                                        value={isUpvoted ? "true" : "false"}
                                       />
-                                    </button>
-                                  </Form>
-                                </li>
-                              );
-                            })}
-                        </ul>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </li>
-            ))}
+                                      <input
+                                        type="hidden"
+                                        name="cutId"
+                                        value={id}
+                                      />
+                                      <input
+                                        type="hidden"
+                                        name="userId"
+                                        value={userId.value.userId}
+                                      />
+                                      <button
+                                        type="submit"
+                                        class={clsx([
+                                          "outline-4 focus-visible:outline",
+                                          show === "sone-que-volaba"
+                                            ? "focus-visible:outline-show-soneQueVolaba-blue"
+                                            : "focus-visible:outline-show-seriaIncreible-purple",
+                                        ])}
+                                        aria-label={
+                                          isUpvoted
+                                            ? "Quitar voto de este corte"
+                                            : "Votar este corte para el ranking"
+                                        }
+                                        aria-pressed={isUpvoted}
+                                      >
+                                        <HeartIcon
+                                          class={clsx([
+                                            "h-6 w-7",
+                                            show === "sone-que-volaba"
+                                              ? isUpvoted
+                                                ? "fill-show-soneQueVolaba-blueHover text-show-soneQueVolaba-blue"
+                                                : "fill-transparent text-show-soneQueVolaba-blueHover"
+                                              : isUpvoted
+                                              ? "fill-show-seriaIncreible-purpleHover text-show-seriaIncreible-purple"
+                                              : "fill-transparent text-show-seriaIncreible-purpleHover",
+                                          ])}
+                                        />
+                                      </button>
+                                    </Form>
+                                  </li>
+                                );
+                              })}
+                          </ul>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
+              );
+            })}
         </ul>
       </section>
     </>
