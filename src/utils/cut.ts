@@ -77,11 +77,5 @@ export async function getCuts(hash: string, videoId: number) {
   const res = await fetch(url);
   const html = await res.text();
   const raws = getRaws(html, videoId);
-  const result = cutsSchema.safeParse(raws);
-  if (!result.success) {
-    throw new Error(result.error.toString());
-  }
-
-  const cuts = result.data;
-  return dedupe(cuts);
+  return cutsSchema.safeParse(raws);
 }

@@ -5,26 +5,9 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { Kysely } from "kysely";
 import { D1Dialect } from "kysely-d1";
 import clsx from "clsx";
+import type { Cuts } from "~/utils/cut";
 import { getCuts } from "~/utils/cut";
-
-const videosSchema = z.array(
-  z.object({
-    hash: z.string(),
-    show: z.string(),
-    title: z.string(),
-  }),
-);
-
-function getShow(title: string): string {
-  const regex = /(ser[ií]a\sincre[ií]ble|so[ñn][eé]?\sque\svolaba)/g;
-  const matches = title.toLocaleLowerCase().match(regex);
-
-  if (!matches) {
-    throw new Error('the "title" should contain the "show" name');
-  }
-
-  return matches[0];
-}
+import { getVideos } from "~/utils/video";
 
 export const useAddCuts = routeAction$(
   async ({ day, month }, { platform, fail, status }) => {
@@ -32,31 +15,10 @@ export const useAddCuts = routeAction$(
     const db = new Kysely<DB>({
       dialect: new D1Dialect({ database: env.DB }),
     });
-    const res = await fetch(
-      `https://www.youtube.com/@olgaenvivo_/search?query=${day}%2F${month}`,
-    );
-    const html = await res.text();
-    const regex = /"videoId":"([^"]*?)".*?"text":"((?:[^"\\]|\\.)*)"/g;
-    const raws = [] as unknown[];
-
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      const [, hash, title] = match;
-
-      if (title.includes(`${day}/${month}`)) {
-        raws.push({
-          hash,
-          title,
-          show: getShow(title),
-        });
-      }
-    }
-
-    const result = videosSchema.safeParse(raws);
+    const result = await getVideos(day, month);
     if (!result.success) {
       return fail(400, { success: false, error: result.error.toString() });
     }
-
     const nextVideos = result.data;
     if (nextVideos.length === 0) {
       return fail(409, {
@@ -98,9 +60,20 @@ export const useAddCuts = routeAction$(
       .select(["title", "id", "hash"])
       .where((eb) => eb.or(videos.map(({ hash }) => eb("hash", "=", hash))))
       .execute();
-    const cuts = (
-      await Promise.all(addedVideos.map(({ hash, id }) => getCuts(hash, id)))
-    ).flat();
+
+    // safely casting as I'm parsing with the schema library before adding items to it
+    const cuts: Cuts = [];
+    for (const { hash, id } of addedVideos) {
+      const result = await getCuts(hash, id);
+      if (!result.success) {
+        return fail(400, { success: false, error: result.error.toString() });
+      }
+      const cuts = result.data;
+
+      for (const cut of cuts) {
+        cuts.push(cut);
+      }
+    }
 
     const CHUNK_SIZE = 20;
     for (let i = 0; i < cuts.length; i += CHUNK_SIZE) {
