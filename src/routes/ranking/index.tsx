@@ -35,7 +35,7 @@ export const useCuts = routeLoader$(async ({ request, error }) => {
     throw error(400, _result.error.toString());
   }
 
-  return { cutsByShow };
+  return { cutsByShow: _result.data };
 });
 
 export default component$(() => {
