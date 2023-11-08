@@ -25,14 +25,14 @@ export const useUserId = routeLoader$(async (requestEvent) => {
   return { userId: user?.userId };
 });
 
-export const useCuts = routeLoader$(async ({ request }) => {
+export const useCuts = routeLoader$(async ({ request, error }) => {
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
   const query = searchParams.get("query");
   const raws = await (await fetch(url.origin + "/cut/get/all")).json();
   const result = cutsSchema.safeParse(raws);
   if (!result.success) {
-    throw new Error(result.error.toString());
+    throw error(500, result.error.toString());
   }
   const cuts = result.data;
   const cutsByDay = Object.entries(
@@ -82,7 +82,7 @@ export const useCuts = routeLoader$(async ({ request }) => {
 });
 
 export const useUpvotes = routeLoader$(async (requestEvent) => {
-  const { request, platform } = requestEvent;
+  const { request, platform, error } = requestEvent;
   const url = new URL(request.url);
   const db = getDb(platform);
   const user = await getUser(requestEvent, db);
@@ -96,7 +96,7 @@ export const useUpvotes = routeLoader$(async (requestEvent) => {
   ).json();
   const result = upvotesSchema.safeParse(raws);
   if (!result.success) {
-    throw new Error(result.error.toString());
+    throw error(500, result.error.toString());
   }
   const upvotes = result.data;
 

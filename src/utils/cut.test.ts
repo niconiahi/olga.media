@@ -180,6 +180,59 @@ describe("getRaws", () => {
       { start: "1:50:00", label: "GRACIAS", videoId: 1 },
     ]);
   });
+
+  test("should correctly get the list from the video of 30/10", async () => {
+    const hash = "wHPCkdM46lI";
+    const url = `https://www.youtube.com/watch?v=${hash}`;
+    const res = await fetch(url);
+    const html = await res.text();
+    const videoId = 1;
+    const raws = getRaws(html, videoId);
+    const result = cutsSchema.safeParse(raws);
+    if (!result.success) {
+      throw new Error(result.error.toString());
+    }
+
+    const cuts = result.data;
+    expect(dedupe(cuts)).toStrictEqual([
+      { start: "00:00", label: "QUÉ DIFÍCIL QUE ESTÁ EL LUNES", videoId: 1 },
+      { start: "01:53", label: "Eial Pajerman", videoId: 1 },
+      {
+        start: "04:10",
+        label: "Cancelaciones y tutorial para acomodarse los huevos",
+        videoId: 1,
+      },
+      { start: "12:11", label: "Se busca pareja", videoId: 1 },
+      { start: "14:11", label: "PAJERMAAAAAN", videoId: 1 },
+      { start: "18:32", label: "PAJEIOOOO", videoId: 1 },
+      { start: "24:24", label: "Finde de Halloween", videoId: 1 },
+      {
+        start: "29:46",
+        label: "Nati manda donde estuás a la persona equivocada",
+        videoId: 1,
+      },
+      { start: "31:38", label: "Qué hizo Homero el finde", videoId: 1 },
+      { start: "33:48", label: "Habló Pajeio", videoId: 1 },
+      { start: "40:00", label: "Historias respondibles", videoId: 1 },
+      { start: "51:17", label: "SE ACTIVÓ HÉRCULA", videoId: 1 },
+      { start: "1:03:08", label: "5 MINUTOS DE PIBARDO", videoId: 1 },
+      { start: "1:06:56", label: "Spider Man en el obelisco", videoId: 1 },
+      { start: "1:14:09", label: "Qué pasó con la nafta", videoId: 1 },
+      {
+        start: "1:17:09",
+        label: "Se perdió un perro en la esquina de Olguita",
+        videoId: 1,
+      },
+      {
+        start: "1:23:25",
+        label: "Vivir solos o convivir con alguien",
+        videoId: 1,
+      },
+      { start: "1:34:38", label: "Filosofía hoy", videoId: 1 },
+      { start: "1:58:33", label: "Cuarenta años de democracia", videoId: 1 },
+      { start: "2:07:13", label: "Eial peinateee", videoId: 1 },
+    ]);
+  });
 });
 
 describe("dedupeCuts", () => {

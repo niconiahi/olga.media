@@ -7,11 +7,7 @@ const envSchema = z.object({
 });
 
 export function getEnv(platform: QwikCityPlatform) {
-  const result = envSchema.safeParse(platform.env);
-  if (!result.success) {
-    throw new Error(result.error.toString());
-  }
-  const env = result.data;
+  const env = envSchema.parse(platform.env);
 
   return env;
 }

@@ -68,9 +68,9 @@ export const useAddCuts = routeAction$(
       if (!result.success) {
         return fail(400, { success: false, error: result.error.toString() });
       }
-      const cuts = result.data;
+      const _cuts = result.data;
 
-      for (const cut of cuts) {
+      for (const cut of _cuts) {
         cuts.push(cut);
       }
     }

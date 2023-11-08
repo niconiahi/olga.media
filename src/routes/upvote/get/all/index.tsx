@@ -15,11 +15,16 @@ export const upvotesSchema = z.array(
 
 export type Upvotes = z.infer<typeof upvotesSchema>;
 
-export const onGet: RequestHandler = async ({ json, platform, request }) => {
+export const onGet: RequestHandler = async ({
+  json,
+  platform,
+  request,
+  error,
+}) => {
   const url = new URL(request.url);
   const result = userIdSchema.safeParse(url.searchParams.get("userId"));
   if (!result.success) {
-    throw new Error(result.error.toString());
+    throw error(500, result.error.toString());
   }
   const userId = result.data;
   const env = platform.env as { DB: D1Database };

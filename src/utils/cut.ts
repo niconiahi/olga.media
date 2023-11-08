@@ -6,7 +6,7 @@ function getSafeStart(start: string) {
   return pieces
     .map((digit, i) => {
       if (pieces.length === 3 && i === 0) {
-        return digit;
+        return digit.startsWith("0") ? digit.replace("0", "") : digit;
       }
 
       if (pieces.length === 2 && i === 0) {

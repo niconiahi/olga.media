@@ -119,7 +119,7 @@ export const useCuts = routeLoader$(async ({ request, error }) => {
 
 export const useUpvotesPromise = routeLoader$((requestEvent) => {
   return async () => {
-    const { request, platform } = requestEvent;
+    const { request, platform, error } = requestEvent;
     const url = new URL(request.url);
     const db = getDb(platform);
     const user = await getUser(requestEvent, db);
@@ -134,7 +134,7 @@ export const useUpvotesPromise = routeLoader$((requestEvent) => {
 
     const result = upvotesSchema.safeParse(raws);
     if (!result.success) {
-      throw new Error(result.error.toString());
+      throw error(500, result.error.toString());
     }
     const upvotes = result.data;
 

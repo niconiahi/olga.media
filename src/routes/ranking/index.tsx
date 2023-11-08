@@ -15,7 +15,7 @@ export const useCuts = routeLoader$(async ({ request, error }) => {
   const raws = await (await fetch(url.origin + "/cut/get/ranking")).json();
   const result = cutsSchema.safeParse(raws);
   if (!result.success) {
-    throw new Error(result.error.toString());
+    throw error(400, result.error.toString());
   }
   const cuts = result.data;
   const cutsByShow = Object.entries(

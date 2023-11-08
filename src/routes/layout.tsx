@@ -29,7 +29,6 @@ export const head: DocumentHead = {
 export const useUserId = routeLoader$(async (requestEvent) => {
   const db = getDb(requestEvent.platform);
   const user = await getUser(requestEvent, db);
-  console.log("useUserId ~ user:", user);
 
   return { userId: user?.userId };
 });
