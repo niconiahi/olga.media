@@ -3,8 +3,7 @@ CREATE TABLE "video" (
   "hash" TEXT NOT NULL,
   "title" TEXT NOT NULL,
   "show" TEXT NOT NULL,
-  "day" INTEGER NOT NULL,
-  "month" INTEGER NOT NULL,
+  "date" DATETIME NOT NULL,
   "created_at" DATETIME DEFAULT CURRENT_TIMESTAMP, 
   "updated_at" DATETIME
 );

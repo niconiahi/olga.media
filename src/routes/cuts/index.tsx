@@ -17,14 +17,11 @@ import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { HeartIcon } from "~/icons/heart";
 import { getSeconds } from "~/utils/cut";
-import { getShow, showSchema } from "~/utils/video";
-
-const daySchema = z
-  .string()
-  .regex(/\d{1,}\/\d{1,2}/g, 'The expected day format is "dd/dd"');
+import { showSchema } from "~/utils/video";
+import { getDay, getMonth } from "~/utils/date";
 
 const cutsByDaySchema = z.array(
-  z.tuple([daySchema, z.array(z.tuple([showSchema, cutsSchema]))]),
+  z.tuple([z.coerce.date(), z.array(z.tuple([showSchema, cutsSchema]))]),
 );
 
 export const useCuts = routeLoader$(async ({ request, error }) => {
@@ -62,16 +59,14 @@ export const useCuts = routeLoader$(async ({ request, error }) => {
       .reduce<{
         [day: string]: { [show: string]: Cuts };
       }>((prevDays, cut) => {
-        const day = `${cut.day}/${cut.month}`;
-        const { show: _show } = cut;
-        const show = getShow(_show);
+        const { show, date } = cut;
         return {
           ...prevDays,
-          [day]: prevDays[day]
+          [date]: prevDays[date]
             ? {
-                ...prevDays[day],
-                [show]: prevDays[day][show]
-                  ? [...prevDays[day][show], cut]
+                ...prevDays[date],
+                [show]: prevDays[date][show]
+                  ? [...prevDays[date][show], cut]
                   : [cut],
               }
             : {
@@ -81,26 +76,9 @@ export const useCuts = routeLoader$(async ({ request, error }) => {
       }, {}),
   )
     .sort(([a], [b]) => {
-      function day(date: string) {
-        const [day] = date.split("/");
-
-        return Number(day);
-      }
-      function month(date: string) {
-        const [, month] = date.split("/");
-
-        return Number(month);
-      }
-
-      if (month(a) > month(b)) {
-        return 1;
-      } else if (month(a) < month(b)) {
-        return -1;
-      } else if (month(a) === month(b)) {
-        return day(a) > day(b) ? 1 : -1;
-      }
-
-      return 0;
+      const dateA = new Date(a);
+      const dateB = new Date(b);
+      return dateA.getTime() - dateB.getTime();
     })
     .map((day) => {
       return [day[0], Object.entries(day[1])];
@@ -265,22 +243,22 @@ export default component$(() => {
           {cuts.value.cutsByDay
             .slice()
             .reverse()
-            .map(([day, cuts], index) => {
+            .map(([date, cuts], index) => {
               return (
-                <li key={`day-${day}`} class="space-y-2">
+                <li key={`date-${date.toISOString()}`} class="space-y-2">
                   <h4
                     class={clsx([
                       "bebas text-3xl uppercase leading-none text-brand-red",
                       index > 0 ? "mt-3" : "mt-0",
                     ])}
                   >
-                    {day}
+                    {`${getDay(date)}/${getMonth(date)}`}
                   </h4>
                   <ul class="space-y-3">
                     {cuts.map(([show, cuts]) => {
                       return (
                         <li
-                          key={`show-${day}-${show}`}
+                          key={`show-${date}-${show}`}
                           class={clsx([
                             "mr-0.5 space-y-2 border-2 p-2",
                             show === "sone-que-volaba"
@@ -313,7 +291,7 @@ export default component$(() => {
                               .map(({ label, start, hash, id, isUpvoted }) => {
                                 return (
                                   <li
-                                    key={`cut-${day}-${show}-${hash}`}
+                                    key={`cut-${date}-${show}-${hash}`}
                                     class="flex items-start space-x-2 py-0.5"
                                   >
                                     <a

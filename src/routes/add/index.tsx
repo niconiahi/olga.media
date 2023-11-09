@@ -5,12 +5,11 @@ import type { D1Database } from "@cloudflare/workers-types";
 import { Kysely } from "kysely";
 import { D1Dialect } from "kysely-d1";
 import clsx from "clsx";
-import type { Cuts } from "~/utils/cut";
-import { getCuts } from "~/utils/cut";
+import { dedupe, getCuts } from "~/utils/cut";
 import { getVideos } from "~/utils/video";
 
 export const useAddCuts = routeAction$(
-  async ({ day, month }, { platform, fail, status }) => {
+  async ({ day, month, year }, { platform, fail, status }) => {
     const env = platform.env as { DB: D1Database };
     const db = new Kysely<DB>({
       dialect: new D1Dialect({ database: env.DB }),
@@ -48,8 +47,7 @@ export const useAddCuts = routeAction$(
         videos.map(({ hash, title, show }) => ({
           title,
           hash,
-          day,
-          month,
+          date: new Date(`${year}-${month}-${day}`).toISOString(),
           show,
         })),
       )
@@ -61,34 +59,27 @@ export const useAddCuts = routeAction$(
       .where((eb) => eb.or(videos.map(({ hash }) => eb("hash", "=", hash))))
       .execute();
 
-    // safely casting as I'm parsing with the schema library before adding items to it
-    const cuts: Cuts = [];
     for (const { hash, id } of addedVideos) {
       const result = await getCuts(hash, id);
       if (!result.success) {
         return fail(400, { success: false, error: result.error.toString() });
       }
-      const _cuts = result.data;
+      const cuts = dedupe(result.data);
+      const CHUNK_SIZE = 20;
+      for (let i = 0; i < cuts.length; i += CHUNK_SIZE) {
+        const chunk = cuts.slice(i, i + CHUNK_SIZE);
 
-      for (const cut of _cuts) {
-        cuts.push(cut);
+        await db
+          .insertInto("cut")
+          .values(
+            chunk.map(({ label, start, videoId }) => ({
+              label,
+              start,
+              video_id: videoId,
+            })),
+          )
+          .execute();
       }
-    }
-
-    const CHUNK_SIZE = 20;
-    for (let i = 0; i < cuts.length; i += CHUNK_SIZE) {
-      const chunk = cuts.slice(i, i + CHUNK_SIZE);
-
-      await db
-        .insertInto("cut")
-        .values(
-          chunk.map(({ label, start, videoId }) => ({
-            label,
-            start,
-            video_id: videoId,
-          })),
-        )
-        .execute();
     }
 
     status(201);
@@ -97,6 +88,7 @@ export const useAddCuts = routeAction$(
   zod$({
     day: z.coerce.number(),
     month: z.coerce.number(),
+    year: z.coerce.number(),
   }),
 );
 
@@ -145,6 +137,17 @@ export default component$(() => {
             type="number"
             id="month"
             name="month"
+          />
+        </p>
+        <p class="flex flex-col space-y-1">
+          <label class="mabry leading-none text-brand-blue" for="year">
+            Año
+          </label>
+          <input
+            class="mabry border-2 border-brand-blue bg-brand-stone px-1 py-3 text-brand-blue outline-4 focus-visible:outline focus-visible:outline-brand-red md:hover:bg-brand-blueHover"
+            type="number"
+            id="year"
+            name="year"
           />
         </p>
         <button

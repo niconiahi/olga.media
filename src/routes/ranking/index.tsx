@@ -6,7 +6,7 @@ import clsx from "clsx";
 import { SeriaIncreibleIcon } from "~/icons/seria-increible";
 import { SoneQueVolabaIcon } from "~/icons/sone-que-volaba";
 import { getSeconds } from "~/utils/cut";
-import { getShow, showSchema } from "~/utils/video";
+import { showSchema } from "~/utils/video";
 
 const cutsByShowSchema = z.array(z.tuple([showSchema, cutsSchema]));
 
@@ -20,8 +20,7 @@ export const useCuts = routeLoader$(async ({ request, error }) => {
   const cuts = result.data;
   const cutsByShow = Object.entries(
     cuts.reduce<{ [show: string]: Cuts }>((prevShows, cut) => {
-      const { show: _show } = cut;
-      const show = getShow(_show);
+      const { show } = cut;
 
       return {
         ...prevShows,

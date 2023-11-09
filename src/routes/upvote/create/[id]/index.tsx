@@ -15,9 +15,8 @@ export const upvotesSchema = z.array(
   z.object({
     start: z.string(),
     label: z.string(),
-    day: z.number(),
+    date: z.string(),
     hash: z.string(),
-    month: z.number(),
     show: z.string(),
   }),
 );

@@ -5,9 +5,8 @@ export const cutsSchema = z.array(
   z.object({
     start: z.string(),
     label: z.string(),
-    day: z.number(),
     hash: z.string(),
-    month: z.number(),
+    date: z.string(),
     show: z.string(),
   }),
 );

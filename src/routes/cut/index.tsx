@@ -60,15 +60,14 @@ export const useCuts = routeLoader$(async ({ request, error }) => {
       .reduce<{
         [day: string]: { [show: string]: Cuts };
       }>((prevDays, cut) => {
-        const day = `${cut.day}/${cut.month}`;
-        const { show } = cut;
+        const { show, date } = cut;
         return {
           ...prevDays,
-          [day]: prevDays[day]
+          [date]: prevDays[date]
             ? {
-                ...prevDays[day],
-                [show]: prevDays[day][show]
-                  ? [...prevDays[day][show], cut]
+                ...prevDays[date],
+                [show]: prevDays[date][show]
+                  ? [...prevDays[date][show], cut]
                   : [cut],
               }
             : {

@@ -30,7 +30,6 @@ export interface Upvote {
 
 export interface User {
   id: string;
-  username: string;
 }
 
 export interface UserKey {
@@ -48,10 +47,9 @@ export interface UserSession {
 
 export interface Video {
   created_at: Generated<string | null>;
-  day: number;
+  date: string;
   hash: string;
   id: Generated<number>;
-  month: number;
   show: string;
   title: string;
   updated_at: string | null;

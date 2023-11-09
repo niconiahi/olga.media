@@ -9,9 +9,8 @@ export const cutsSchema = z.array(
     id: z.number(),
     start: z.string(),
     label: z.string(),
-    day: z.number(),
     hash: z.string(),
-    month: z.number(),
+    date: z.string(),
     show: z.string(),
   }),
 );
@@ -31,10 +30,9 @@ export const onGet: RequestHandler = async ({
     .selectFrom("cut")
     .innerJoin("video", "video.id", "cut.video_id")
     .select([
-      "video.day",
+      "video.date",
       "video.hash",
       "video.show",
-      "video.month",
       "cut.id",
       "cut.label",
       "cut.start",
