@@ -7,13 +7,15 @@ export const showSchema = z.union([
 
 export type Show = z.infer<typeof showSchema>;
 
-const videosSchema = z.array(
+export const videosSchema = z.array(
   z.object({
     hash: z.string().min(1, "The hash is required"),
     show: showSchema,
     title: z.string().min(1, "The title is required"),
   }),
 );
+
+export type Videos = z.infer<typeof videosSchema>;
 
 export function getShow(title: string): string {
   const regex = /(ser[ií]a\sincre[ií]ble|so[ñn][eé]?\sque\svolaba)/g;
@@ -28,24 +30,27 @@ export function getShow(title: string): string {
     : "seria-increible";
 }
 
-export async function getVideos(day: number, month: number) {
-  const res = await fetch(
-    `https://www.youtube.com/@olgaenvivo_/search?query=${day}%2F${month}`,
-  );
-  const html = await res.text();
+export async function getRaws(html: string, day: number, month: number) {
   const regex = /"videoId":"([^"]*?)".*?"text":"((?:[^"\\]|\\.)*)"/g;
   const raws = [] as unknown[];
   let match;
   while ((match = regex.exec(html)) !== null) {
     const [, hash, title] = match;
-
     if (title.includes(`${day}/${month}`)) {
       raws.push({
         hash,
-        title,
+        title: title.trim().replaceAll("\\", ""),
         show: getShow(title),
       });
     }
   }
+  return raws;
+}
+
+export async function getVideos(day: number, month: number) {
+  const url = `https://www.youtube.com/@olgaenvivo_/search?query=${day}%2F${month}`;
+  const res = await fetch(url);
+  const html = await res.text();
+  const raws = await getRaws(html, day, month);
   return videosSchema.safeParse(raws);
 }
