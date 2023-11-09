@@ -30,7 +30,6 @@ export function getRaws(html: string, videoId: number): unknown[] {
   const raws = [] as unknown[];
   const regex =
     /(\\n\d{1,2}:\d{2}(?::\d{1,2})?)\s(.*?)(?=\\n\d{1,2}:\d{2}(?::\d{1,2})?|\\n\\n|$)/g;
-
   let match;
   while ((match = regex.exec(html)) !== null) {
     const [, start, label] = match;
@@ -53,10 +52,9 @@ export function dedupe(cuts: Cuts) {
   return cuts.slice(0, index + 1);
 }
 
-// the "start" comes in the form of "d{1,2}:dd{1,2}:dd{1,2}"
+// the "start" comes in the form of "d{1,2}:d{1,2}:d{1,2}"
 export function getSeconds(start: string) {
   const parts = start.split(":").map(Number);
-
   let seconds = 0;
   if (parts.length === 3) {
     seconds += parts[0] * 3600;

@@ -1,20 +1,15 @@
 import { test, expect, describe } from "vitest";
 import type { Cuts } from "~/utils/cut";
-import { cutsSchema, dedupe, getRaws } from "~/utils/cut";
+import { dedupe, getCuts } from "~/utils/cut";
 
-describe("getRaws", () => {
+describe("getCuts", () => {
   test("should correctly get the list from the video of 21/9", async () => {
     const hash = "30bcG4mLRNA";
-    const url = `https://www.youtube.com/watch?v=${hash}`;
-    const res = await fetch(url);
-    const html = await res.text();
     const videoId = 1;
-    const raws = getRaws(html, videoId);
-    const result = cutsSchema.safeParse(raws);
+    const result = await getCuts(hash, videoId);
     if (!result.success) {
       throw new Error(result.error.toString());
     }
-
     const cuts = result.data;
     expect(dedupe(cuts)).toStrictEqual([
       { start: "00:00", label: "Extrañamos Argentina", videoId: 1 },
@@ -36,21 +31,16 @@ describe("getRaws", () => {
         videoId: 1,
       },
       { start: "1:50:00", label: "GRACIAS", videoId: 1 },
-    ]);
+    ] as Cuts);
   });
 
   test("should correctly get the list from the video of 12/10", async () => {
     const hash = "A2HPLsdnm6s";
-    const url = `https://www.youtube.com/watch?v=${hash}`;
-    const res = await fetch(url);
-    const html = await res.text();
     const videoId = 1;
-    const raws = getRaws(html, videoId);
-    const result = cutsSchema.safeParse(raws);
+    const result = await getCuts(hash, videoId);
     if (!result.success) {
       throw new Error(result.error.toString());
     }
-
     const cuts = result.data;
     expect(dedupe(cuts)).toStrictEqual([
       {
@@ -70,21 +60,16 @@ describe("getRaws", () => {
       { start: "1:15:40", label: "Concurso de eructos", videoId: 1 },
       { start: "2:08:40", label: "A Luqui le gusta el alfajor", videoId: 1 },
       { start: "2:11:16", label: "DJ Cremona", videoId: 1 },
-    ]);
+    ] as Cuts);
   });
 
   test("should correctly get the list from the video of 9/10", async () => {
     const hash = "cBzUBQSCJ5o";
-    const url = `https://www.youtube.com/watch?v=${hash}`;
-    const res = await fetch(url);
-    const html = await res.text();
     const videoId = 1;
-    const raws = getRaws(html, videoId);
-    const result = cutsSchema.safeParse(raws);
+    const result = await getCuts(hash, videoId);
     if (!result.success) {
       throw new Error(result.error.toString());
     }
-
     const cuts = result.data;
     expect(dedupe(cuts)).toStrictEqual([
       { start: "00:00", label: "Muy lunes todo", videoId: 1 },
@@ -142,21 +127,16 @@ describe("getRaws", () => {
       { start: "1:12:47", label: "Israel en el debate", videoId: 1 },
       { start: "1:17:55", label: "Libre portación de armas", videoId: 1 },
       { start: "1:35:11", label: "Massa contra Milei", videoId: 1 },
-    ]);
+    ] as Cuts);
   });
 
   test("should correctly get the list from the video of 21/9", async () => {
     const hash = "30bcG4mLRNA";
-    const url = `https://www.youtube.com/watch?v=${hash}`;
-    const res = await fetch(url);
-    const html = await res.text();
     const videoId = 1;
-    const raws = getRaws(html, videoId);
-    const result = cutsSchema.safeParse(raws);
+    const result = await getCuts(hash, videoId);
     if (!result.success) {
       throw new Error(result.error.toString());
     }
-
     const cuts = result.data;
     expect(dedupe(cuts)).toStrictEqual([
       { start: "00:00", label: "Extrañamos Argentina", videoId: 1 },
@@ -178,21 +158,16 @@ describe("getRaws", () => {
         videoId: 1,
       },
       { start: "1:50:00", label: "GRACIAS", videoId: 1 },
-    ]);
+    ] as Cuts);
   });
 
   test("should correctly get the list from the video of 30/10", async () => {
     const hash = "wHPCkdM46lI";
-    const url = `https://www.youtube.com/watch?v=${hash}`;
-    const res = await fetch(url);
-    const html = await res.text();
     const videoId = 1;
-    const raws = getRaws(html, videoId);
-    const result = cutsSchema.safeParse(raws);
+    const result = await getCuts(hash, videoId);
     if (!result.success) {
       throw new Error(result.error.toString());
     }
-
     const cuts = result.data;
     expect(dedupe(cuts)).toStrictEqual([
       { start: "00:00", label: "QUÉ DIFÍCIL QUE ESTÁ EL LUNES", videoId: 1 },
@@ -231,11 +206,69 @@ describe("getRaws", () => {
       { start: "1:34:38", label: "Filosofía hoy", videoId: 1 },
       { start: "1:58:33", label: "Cuarenta años de democracia", videoId: 1 },
       { start: "2:07:13", label: "Eial peinateee", videoId: 1 },
-    ]);
+    ] as Cuts);
+  });
+
+  test("should correctly get the list from the video of 12/10", async () => {
+    const hash = "f2rdkeeshZU";
+    const videoId = 1;
+    const result = await getCuts(hash, videoId);
+    if (!result.success) {
+      throw new Error(result.error.toString());
+    }
+    const cuts = result.data;
+    expect(dedupe(cuts)).toStrictEqual([
+      { start: "00:00", label: "Hoy es Juernessss", videoId: 1 },
+      { start: "02:37", label: "Leti modo entrevista de fulbo", videoId: 1 },
+      { start: "07:08", label: "Cómo NO bailar Samba", videoId: 1 },
+      { start: "13:24", label: "El reelcovery de Homero", videoId: 1 },
+      { start: "13:50", label: "Unos temones de Son amores", videoId: 1 },
+      {
+        start: "15:44",
+        label: "Nati no puede volver de Rio sin cog3r",
+        videoId: 1,
+      },
+      { start: "17:31", label: "Fuertes acusaciones para Homero", videoId: 1 },
+      {
+        start: "18:15",
+        label: "Es un poco temprano para hablar de comer ort0",
+        videoId: 1,
+      },
+      {
+        start: "19:36",
+        label: "Eial contra las chicas por bajarse del fulbito mixto",
+        videoId: 1,
+      },
+      { start: "24:22", label: "Me bajé de aclarar:", videoId: 1 },
+      { start: "56:48", label: "Enigmáticos del día", videoId: 1 },
+      {
+        start: "1:03:03",
+        label: "El jorobado de Notre Dame nos arruinó la vida",
+        videoId: 1,
+      },
+      {
+        start: "1:15:48",
+        label: "FELIZ CUMPLEMES OLGUITA Y FELIZ CUMPLEAÑOS A LA 9 DE JULIO",
+        videoId: 1,
+      },
+      {
+        start: "1:24:44",
+        label: "Desde qué altura se puede saltar y LA GRAN HAZAÑA",
+        videoId: 1,
+      },
+      {
+        start: "1:31:10",
+        label: "Nos comimos los alfajores de la despedida de Gime",
+        videoId: 1,
+      },
+      { start: "1:33:40", label: "EL ROBO DEL SIGLO", videoId: 1 },
+      { start: "1:56:37", label: "Planes para el finde largo", videoId: 1 },
+      { start: "1:57:30", label: "Cierre musical", videoId: 1 },
+    ] as Cuts);
   });
 });
 
-describe("dedupeCuts", () => {
+describe("dedupe", () => {
   test("should dedupe correctly cuts for 21/9", () => {
     const cuts: Cuts = [
       { start: "0:00", label: "Extrañamos Argentina", videoId: 1 },
@@ -335,6 +368,6 @@ describe("dedupeCuts", () => {
         videoId: 1,
       },
       { start: "1:50:00", label: "GRACIAS", videoId: 1 },
-    ]);
+    ] as Cuts);
   });
 });
